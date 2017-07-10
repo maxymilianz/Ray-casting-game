@@ -42,10 +42,16 @@ public class Camera extends JPanel {
 
             int j = 0, h = (int) (300 * dir.magnitude() / character.getPos().distance(collisionPoint)), emptyH = (resY - h) / 2;
 
+            BufferedImage img = Textures.getBlocks().get(block(vec, collisionPoint));
+            int x = (int) (((pxSide ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth());
+
             for (; j < emptyH; j++)
                 rendered.setRGB(i, j, Color.blue.getRGB());
-            for (; j < resY && j < resY - emptyH; j++)
-                rendered.setRGB(i, j, Color.yellow.getRGB());
+            for (; j < resY && j < resY - emptyH; j++) {
+//                rendered.setRGB(i, j, Color.yellow.getRGB());
+                int y = (j - emptyH) * img.getHeight() / h - 1;
+                rendered.setRGB(i, j, img.getRGB(x, y == -1 ? 0 : y));
+            }
             for (; j < resY; j++)
                 rendered.setRGB(i, j, Color.gray.getRGB());
         }

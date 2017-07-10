@@ -23,6 +23,7 @@ public class Game extends JFrame {
 
         getContentPane().setPreferredSize(new Dimension(resX, resY));
 
+        Textures.init();
         initMaps();
 
         newGame();
@@ -57,9 +58,9 @@ public class Game extends JFrame {
     }
 
     private void initMaps() {
-        maps.add(new int[][]{{1, 1, 1, 1},
-                {1, 0, 0, 1},
-                {1, 0, 0, 1},
-                {1, 1, 1, 1}});
+        maps.add(new int[][]{{6, 6, 6, 6},
+                {6, 0, 0, 6},
+                {6, 0, 0, 6},
+                {6, 6, 6, 6}});
     }
 }
