@@ -23,6 +23,8 @@ public class Game extends JFrame {
 
         getContentPane().setPreferredSize(new Dimension(resX, resY));
 
+        initMaps();
+
         newGame();
 
         pack();

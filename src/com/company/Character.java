@@ -1,24 +1,25 @@
 package com.company;
 
+import javafx.geometry.Point2D;
+
 /**
  * Created by Lenovo on 10.07.2017.
  */
 public class Character {
-    private int x, y;
+    private Point2D pos, dir = new Point2D(1, 0);
 
     private int[][] map;
 
-    Character(int x, int y, int[][] map) {
-        this.x = x;
-        this.y = y;
+    public Character(int x, int y, int[][] map) {
+        pos = new Point2D(x, y);
         this.map = map;
     }
 
-    public int getX() {
-        return x;
+    public Point2D getPos() {
+        return pos;
     }
 
-    public int getY() {
-        return y;
+    public Point2D getDir() {
+        return dir;
     }
 }
