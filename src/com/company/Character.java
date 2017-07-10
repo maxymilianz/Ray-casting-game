@@ -6,7 +6,7 @@ import javafx.geometry.Point2D;
  * Created by Lenovo on 10.07.2017.
  */
 public class Character {
-    private Point2D pos, dir = new Point2D(1, 1);
+    private Point2D pos, dir = new Point2D(-2, 1);
 
     private int[][] map;
 

@@ -36,7 +36,7 @@ public class Game extends JFrame {
 
     private void newGame() {
         int[][] map = maps.get(level);
-        character = new Character(1.5, 2.5, map);
+        character = new Character(2.5, 2.5, map);
         camera = new Camera(resX, resY, character, map);
         getContentPane().add(camera);
     }

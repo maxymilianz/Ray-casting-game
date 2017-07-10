@@ -40,11 +40,11 @@ public class Camera extends JPanel {
             Point2D collisionPoint = collisionInfo.getKey();
             boolean pxSide = collisionInfo.getValue();
 
-            int j = 0, h = (int) (500 * dir.magnitude() / character.getPos().distance(collisionPoint)), emptyH = (resY - h) / 2;
+            int j = 0, h = (int) (300 * dir.magnitude() / character.getPos().distance(collisionPoint)), emptyH = (resY - h) / 2;
 
             for (; j < emptyH; j++)
                 rendered.setRGB(i, j, Color.blue.getRGB());
-            for (; j < resY - emptyH; j++)
+            for (; j < resY && j < resY - emptyH; j++)
                 rendered.setRGB(i, j, Color.yellow.getRGB());
             for (; j < resY; j++)
                 rendered.setRGB(i, j, Color.gray.getRGB());
@@ -61,7 +61,7 @@ public class Camera extends JPanel {
         Point2D pos = character.getPos();
         double x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY()),
                 tg = vec.getY() / vec.getX(), diffX = 1 / tg;     // diffY = tg
-        Point2D px = new Point2D(x, tg * (x - pos.getX()) + pos.getY()), py = new Point2D(y, (y - pos.getY()) / tg + pos.getX()), closer = null;
+        Point2D px = new Point2D(x, tg * (x - pos.getX()) + pos.getY()), py = new Point2D((y - pos.getY()) / tg + pos.getX(), y), closer = null;
 
         while (closer == null || block(vec, closer) == 0) {
             if (closer == px)
