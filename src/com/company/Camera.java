@@ -13,10 +13,9 @@ import java.awt.image.BufferedImage;
 public class Camera extends JPanel {
     private final int resX, resY;
 
-    private int fov = 66 * (int) Math.PI / 180;
+    private double fov = 66 * (int) Math.PI / 180;
 
-    private BufferedImage rayCasted;
-    private Point2D dir, plane;
+    private BufferedImage rendered;
 
     private Character character;
 
@@ -28,33 +27,47 @@ public class Camera extends JPanel {
         this.character = character;
         this.map = map;
 
-        rayCasted = new BufferedImage(resX, resY, BufferedImage.TYPE_INT_RGB);
+        rendered = new BufferedImage(resX, resY, BufferedImage.TYPE_INT_RGB);
     }
 
     public void paint(Graphics g) {
-        dir = character.getDir();
-        plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(fov / 2) * dir.magnitude());
+        Point2D dir = character.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(fov / 2) * dir.magnitude()), vec = dir.add(plane),
+                deltaPlane = plane.multiply((double) 2 / resX);
 
         for (int i = 0; i < resX; i++) {
-            Pair<Point2D, Boolean> collisionInfo = collisionInfo(dir.add(plane));
+            vec = vec.subtract(deltaPlane);
+            Pair<Point2D, Boolean> collisionInfo = collisionInfo(vec);
             Point2D collisionPoint = collisionInfo.getKey();
             boolean pxSide = collisionInfo.getValue();
 
+            int j = 0, h = (int) (500 * dir.magnitude() / character.getPos().distance(collisionPoint)), emptyH = (resY - h) / 2;
 
+            for (; j < emptyH; j++)
+                rendered.setRGB(i, j, Color.blue.getRGB());
+            for (; j < resY - emptyH; j++)
+                rendered.setRGB(i, j, Color.yellow.getRGB());
+            for (; j < resY; j++)
+                rendered.setRGB(i, j, Color.gray.getRGB());
         }
+
+        g.drawImage(rendered, 0, 0, null);
+    }
+
+    private int block(Point2D vec, Point2D collisionPoint) {
+        return map[(int) collisionPoint.getY() - (vec.getY() < 0 ? 1 : 0)][(int) collisionPoint.getX() - (vec.getX() < 0 ? 1 : 0)];
     }
 
     private Pair<Point2D, Boolean> collisionInfo(Point2D vec) {
         Point2D pos = character.getPos();
-        double x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY()), tg = vec.getY() / vec.getX(),
-            diffX = 1 / tg;     // diffY = tg
+        double x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY()),
+                tg = vec.getY() / vec.getX(), diffX = 1 / tg;     // diffY = tg
         Point2D px = new Point2D(x, tg * (x - pos.getX()) + pos.getY()), py = new Point2D(y, (y - pos.getY()) / tg + pos.getX()), closer = null;
 
-        while (closer == null || map[(int) Math.round(closer.getY()) - (vec.getY() < 0 ? 1 : 0)][(int) Math.round(closer.getX()) - (vec.getX() < 0 ? 1 : 0)] == 0) {
+        while (closer == null || block(vec, closer) == 0) {
             if (closer == px)
-                px.add(1, tg);
+                px = px.add(new Point2D(1, tg));
             else if (closer == py)
-                py.add(diffX, 1);
+                py = py.add(new Point2D(diffX, 1));
 
             closer = distSquared(pos, px) < distSquared(pos, py) ? px : py;
         }
