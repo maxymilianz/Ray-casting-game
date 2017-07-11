@@ -36,13 +36,13 @@ public class Camera extends JPanel {
 
         for (int i = 0; i < resX; i++) {
             vec = vec.subtract(deltaPlane);
-            Pair<Point2D, Boolean> collisionInfo = collisionInfo(vec);
+            Pair<Point2D, Boolean> collisionInfo = character.collisionInfo(vec);
             Point2D collisionPoint = collisionInfo.getKey();
             boolean pxSide = collisionInfo.getValue();
 
             int j = 0, h = (int) (wallHeight * dir.magnitude() / character.getPos().distance(collisionPoint)), emptyH = (resY - h) / 2;
 
-            BufferedImage img = Textures.getBlocks().get(block(vec, collisionPoint));
+            BufferedImage img = Textures.getBlocks().get(character.block(vec, collisionPoint));
             int x = (int) (((pxSide ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth());
 
             for (; j < emptyH; j++)
@@ -57,32 +57,5 @@ public class Camera extends JPanel {
         }
 
         g.drawImage(rendered, 0, 0, null);
-    }
-
-    private int block(Point2D vec, Point2D collisionPoint) {
-        return map[(int) collisionPoint.getY() - (vec.getY() < 0 ? 1 : 0)][(int) collisionPoint.getX() - (vec.getX() < 0 ? 1 : 0)];
-    }
-
-    private Pair<Point2D, Boolean> collisionInfo(Point2D vec) {
-        Point2D pos = character.getPos();
-        double x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY()),
-                tg = vec.getY() / vec.getX(), diffX = 1 / tg;     // diffY = tg
-        Point2D px = new Point2D(x, tg * (x - pos.getX()) + pos.getY()), py = new Point2D((y - pos.getY()) / tg + pos.getX(), y), closer = null;
-
-        while (closer == null || block(vec, closer) == 0) {
-            if (closer == px)
-                px = px.add(new Point2D(1, tg));
-            else if (closer == py)
-                py = py.add(new Point2D(diffX, 1));
-
-            closer = distSquared(pos, px) < distSquared(pos, py) ? px : py;
-        }
-
-        return new Pair<>(closer, closer == px);
-    }
-
-    private static double distSquared(Point2D p0, Point2D p1) {
-        double diffX = p0.getX() - p1.getX(), diffY = p0.getY() - p1.getY();
-        return diffX * diffX + diffY * diffY;
     }
 }
