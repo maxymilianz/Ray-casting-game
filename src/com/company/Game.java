@@ -2,6 +2,7 @@ package com.company;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 /**
@@ -46,6 +47,9 @@ public class Game extends JFrame {
 
         camera = new Camera(resX, resY, character, map);
         getContentPane().add(camera);
+
+        getContentPane().setCursor(Toolkit.getDefaultToolkit().
+                createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank"));
     }
 
     private void run() {

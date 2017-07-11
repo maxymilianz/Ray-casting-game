@@ -76,8 +76,10 @@ public class Input implements MouseListener, KeyListener {
         m.x += m.x < p.x ? w : m.x >= p.x + w ? -w : 0;
         m.y += m.y < p.y ? h : m.y >= p.y + h ? -h : 0;
 
-        if (!mousePos.equals(m))
+        if (!mousePos.equals(m)) {
             robot.mouseMove(m.x, m.y);
+            mousePos = m;
+        }
     }
 
     private void updateKeys() {

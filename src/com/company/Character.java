@@ -17,7 +17,8 @@ public class Character {
     }
 
     void turn(double angle) {
-
+        double sin = Math.sin(angle), cos = Math.cos(angle);
+        dir = new Mtx2x2(cos, -sin, sin, cos).apply(dir);
     }
 
     void shoot() {
