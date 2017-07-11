@@ -13,6 +13,7 @@ public class Game extends JFrame {
 
     private Camera camera;
     private Character character;
+    private Input input;
 
     private LinkedList<int[][]> maps = new LinkedList<>();
 
@@ -38,6 +39,11 @@ public class Game extends JFrame {
     private void newGame() {
         int[][] map = maps.get(level);
         character = new Character(2.5, 2.5, map);
+
+        input = new Input(this, character, map);
+        addMouseListener(input);
+        addKeyListener(input);
+
         camera = new Camera(resX, resY, character, map);
         getContentPane().add(camera);
     }
@@ -46,14 +52,13 @@ public class Game extends JFrame {
         while (true) {
             long time = System.currentTimeMillis();
 
+            input.update();
             repaint();
 
             try {
                 Thread.sleep(msPerFrame - (System.currentTimeMillis() - time));
             }
-            catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            catch (Exception e) { }
         }
     }
 

@@ -6,19 +6,50 @@ import javafx.geometry.Point2D;
  * Created by Lenovo on 10.07.2017.
  */
 public class Character {
-    private Point2D pos, dir = new Point2D(-1, 0);
+    private Point2D pos, dir = new Point2D(0, -1);
 
     private int[][] map;
 
     public Character(double x, double y, int[][] map) {
         pos = new Point2D(x, y);
         this.map = map;
-        dir = normalize(dir);
+        normalizeDir();
     }
 
-    private static Point2D normalize(Point2D p) {
-        double len = p.magnitude();
-        return p.multiply(1 / len);
+    void turn(double angle) {
+
+    }
+
+    void shoot() {
+
+    }
+
+    void aim() {
+
+    }
+
+    void forward() {
+
+    }
+
+    void backward() {
+
+    }
+
+    void left() {
+
+    }
+
+    void right() {
+
+    }
+
+    void sprint() {
+
+    }
+
+    private void normalizeDir() {
+        dir = dir.multiply(1 / dir.magnitude());
     }
 
     public Point2D getPos() {

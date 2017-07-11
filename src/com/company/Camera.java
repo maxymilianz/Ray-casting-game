@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
  * Created by Lenovo on 10.07.2017.
  */
 public class Camera extends JPanel {
-    private final int resX, resY;
+    private final int resX, resY, wallHeight = 300;
 
     private double fov = 66 * (int) Math.PI / 180;
 
@@ -40,7 +40,7 @@ public class Camera extends JPanel {
             Point2D collisionPoint = collisionInfo.getKey();
             boolean pxSide = collisionInfo.getValue();
 
-            int j = 0, h = (int) (300 * dir.magnitude() / character.getPos().distance(collisionPoint)), emptyH = (resY - h) / 2;
+            int j = 0, h = (int) (wallHeight * dir.magnitude() / character.getPos().distance(collisionPoint)), emptyH = (resY - h) / 2;
 
             BufferedImage img = Textures.getBlocks().get(block(vec, collisionPoint));
             int x = (int) (((pxSide ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth());
