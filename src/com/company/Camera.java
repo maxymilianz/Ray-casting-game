@@ -13,8 +13,6 @@ import java.awt.image.BufferedImage;
 public class Camera extends JPanel {
     private final int resX, resY, wallHeight;
 
-    private double fov = 66 * (int) Math.PI / 180;
-
     private BufferedImage rendered;
 
     private Character character;
@@ -32,15 +30,16 @@ public class Camera extends JPanel {
     }
 
     public void paint(Graphics g) {
-        Point2D dir = character.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(fov / 2) * dir.magnitude()), vec = dir.add(plane),
-                deltaPlane = plane.multiply((double) 2 / resX);
+        double tempH = wallHeight / character.getFov() * character.getDefaultFov();
+        Point2D dir = character.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(character.getFov() / 2) * dir.magnitude()), vec = dir.add(plane),
+                deltaPlane = plane.multiply((double) 2 / resX), pos = character.getPos();
 
         for (int i = 0; i < resX; i++, vec = vec.subtract(deltaPlane)) {
             Pair<Point2D, Boolean> collisionInfo = character.collisionInfo(vec);
             Point2D collisionPoint = collisionInfo.getKey();
             boolean pxSide = collisionInfo.getValue();
 
-            int j = 0, h = (int) (wallHeight * dir.magnitude() / character.getPos().distance(collisionPoint)), emptyH = (resY - h) / 2;
+            int j = 0, h = (int) (tempH * dir.magnitude() / pos.distance(collisionPoint)), emptyH = (resY - h) / 2;
 
             BufferedImage img = Textures.getBlocks().get(character.block(vec, collisionPoint));
             double tempX = (pxSide ? collisionPoint.getY() : collisionPoint.getX()) % 1;

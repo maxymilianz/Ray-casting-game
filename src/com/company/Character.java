@@ -1,13 +1,13 @@
 package com.company;
 
 import javafx.geometry.Point2D;
-import javafx.scene.transform.MatrixType;
 import javafx.util.Pair;
 
 /**
  * Created by Lenovo on 10.07.2017.
  */
 public class Character {
+    private double defaultFov = 66 * Math.PI / 180, aimFov = 45 * Math.PI / 180, fov = defaultFov, deltaFov;
     private double speed = 0.03, sprintSpeed = 0.06, minDistToBlock = 0.1;
 
     private Point2D pos, dir = new Point2D(-1, -1);
@@ -18,6 +18,30 @@ public class Character {
         pos = new Point2D(x, y);
         this.map = map;
         normalizeDir();
+    }
+
+    void update() {
+        if (deltaFov != 0)
+            updateFov();
+    }
+
+    private void updateFov() {
+        if (deltaFov < 0) {
+            if (fov > aimFov)
+                fov += deltaFov;
+            else {
+                fov = aimFov;
+                deltaFov = 0;
+            }
+        }
+        else {
+            if (fov < defaultFov)
+                fov += deltaFov;
+            else {
+                fov = defaultFov;
+                deltaFov = 0;
+            }
+        }
     }
 
     private void go(double speed, Point2D dir) {
@@ -69,7 +93,7 @@ public class Character {
     }
 
     void aim() {
-
+        deltaFov = fov == defaultFov ? -0.035 : fov == aimFov ? 0.035 : deltaFov;
     }
 
     void forward() {
@@ -94,6 +118,14 @@ public class Character {
 
     private void normalizeDir() {
         dir = dir.multiply(1 / dir.magnitude());
+    }
+
+    public double getFov() {
+        return fov;
+    }
+
+    public double getDefaultFov() {
+        return defaultFov;
     }
 
     public Point2D getPos() {

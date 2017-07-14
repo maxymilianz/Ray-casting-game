@@ -57,6 +57,7 @@ public class Game extends JFrame {
             long time = System.currentTimeMillis();
 
             input.update();
+            character.update();
             repaint();
 
             try {
