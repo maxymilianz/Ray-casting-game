@@ -34,8 +34,7 @@ public class Camera extends JPanel {
         Point2D dir = character.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(fov / 2) * dir.magnitude()), vec = dir.add(plane),
                 deltaPlane = plane.multiply((double) 2 / resX);
 
-        for (int i = 0; i < resX; i++) {
-            vec = vec.subtract(deltaPlane);
+        for (int i = 0; i < resX; i++, vec = vec.subtract(deltaPlane)) {
             Pair<Point2D, Boolean> collisionInfo = character.collisionInfo(vec);
             Point2D collisionPoint = collisionInfo.getKey();
             boolean pxSide = collisionInfo.getValue();
@@ -43,14 +42,16 @@ public class Camera extends JPanel {
             int j = 0, h = (int) (wallHeight * dir.magnitude() / character.getPos().distance(collisionPoint)), emptyH = (resY - h) / 2;
 
             BufferedImage img = Textures.getBlocks().get(character.block(vec, collisionPoint));
-            int x = (int) (((pxSide ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth());
+            double tempX = (pxSide ? collisionPoint.getY() : collisionPoint.getX()) % 1;
+            tempX += tempX < 0 ? 1 : 0;
+            int x = (int) (tempX * img.getWidth());
 
             for (; j < emptyH; j++)
                 rendered.setRGB(i, j, Color.blue.getRGB());
-            for (; j < resY && j < resY - emptyH; j++) {
+            for (; j < resY && j < resY - emptyH - 1; j++) {
 //                rendered.setRGB(i, j, Color.yellow.getRGB());
-                int y = (j - emptyH) * img.getHeight() / h - 1;
-                rendered.setRGB(i, j, img.getRGB(x, y == -1 ? 0 : y));
+                int y = (j - emptyH) * img.getHeight() / h;
+                rendered.setRGB(i, j, img.getRGB(x, y));
             }
             for (; j < resY; j++)
                 rendered.setRGB(i, j, Color.gray.getRGB());
