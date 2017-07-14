@@ -17,6 +17,17 @@ public class Character {
 
     LinkedList<Weapon> weapons = new LinkedList<>();
 
+    public Character(double speed, double sprintSpeed, int health, int mana, int stamina, Point2D pos, Point2D dir, LinkedList<Weapon> weapons) {
+        this.speed = speed;
+        this.sprintSpeed = sprintSpeed;
+        this.health = health;
+        this.mana = mana;
+        this.stamina = stamina;
+        this.pos = pos;
+        this.dir = dir;
+        this.weapons = weapons;
+    }
+
     public Point2D getPos() {
         return pos;
     }

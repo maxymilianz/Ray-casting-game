@@ -3,16 +3,16 @@ package com.company;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
 
+import java.util.LinkedList;
+
 /**
  * Created by Lenovo on 10.07.2017.
  */
 public class Hero extends Character {
     private double defaultFov = 66 * Math.PI / 180, aimFov = 45 * Math.PI / 180, fov = defaultFov, deltaFov;
 
-    public Hero(double x, double y, Point2D dir) {
-        pos = new Point2D(x, y);
-        this.dir = dir;
-        normalizeDir();
+    public Hero(double speed, double sprintSpeed, int health, int mana, int stamina, Point2D pos, Point2D dir, LinkedList<Weapon> weapons) {
+        super(speed, sprintSpeed, health, mana, stamina, pos, dir, weapons);
     }
 
     void update() {
