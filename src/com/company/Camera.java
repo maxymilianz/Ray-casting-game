@@ -15,33 +15,32 @@ public class Camera extends JPanel {
 
     private BufferedImage rendered;
 
-    private Character character;
+    private Hero hero;
 
-    private int[][] map;
+    private static int[][] map;
 
-    public Camera(int resX, int resY, Character character, int[][] map) {
+    public Camera(int resX, int resY, Hero hero) {
         this.resX = resX;
         this.resY = resY;
         this.wallHeight = resY;
-        this.character = character;
-        this.map = map;
+        this.hero = hero;
 
         rendered = new BufferedImage(resX, resY, BufferedImage.TYPE_INT_RGB);
     }
 
     public void paint(Graphics g) {
-        double tempH = wallHeight / character.getFov() * character.getDefaultFov();
-        Point2D dir = character.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(character.getFov() / 2) * dir.magnitude()), vec = dir.add(plane),
-                deltaPlane = plane.multiply((double) 2 / resX), pos = character.getPos();
+        double tempH = wallHeight / hero.getFov() * hero.getDefaultFov();
+        Point2D dir = hero.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(hero.getFov() / 2) * dir.magnitude()), vec = dir.add(plane),
+                deltaPlane = plane.multiply((double) 2 / resX), pos = hero.getPos();
 
         for (int i = 0; i < resX; i++, vec = vec.subtract(deltaPlane)) {
-            Pair<Point2D, Boolean> collisionInfo = character.collisionInfo(vec);
+            Pair<Point2D, Boolean> collisionInfo = hero.collisionInfo(vec);
             Point2D collisionPoint = collisionInfo.getKey();
             boolean pxSide = collisionInfo.getValue();
 
             int j = 0, h = (int) (tempH * dir.magnitude() / pos.distance(collisionPoint)), emptyH = (resY - h) / 2;
 
-            BufferedImage img = Textures.getBlocks().get(character.block(vec, collisionPoint));
+            BufferedImage img = Textures.getBlocks().get(hero.block(vec, collisionPoint));
             double tempX = (pxSide ? collisionPoint.getY() : collisionPoint.getX()) % 1;
             tempX += tempX < 0 ? 1 : 0;
             int x = (int) (tempX * img.getWidth());
@@ -61,5 +60,9 @@ public class Camera extends JPanel {
 
         BufferedImage viewfinder = Textures.getImages().get(Textures.Image.VIEWFINDER);
         g.drawImage(viewfinder, (resX - viewfinder.getWidth()) / 2, (resY - viewfinder.getHeight()) / 2, null);
+    }
+
+    public static void setMap(int[][] map) {
+        Camera.map = map;
     }
 }

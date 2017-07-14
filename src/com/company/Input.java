@@ -17,17 +17,14 @@ public class Input implements MouseListener, KeyListener {
     Point mousePos;
     Robot robot;
 
-    Character character;
-
-    int[][] map;
+    Hero hero;
 
     Hashtable<Integer, Boolean> mouseKeys = new Hashtable<>();
     Hashtable<Integer, Boolean> keys = new Hashtable<>();
 
-    public Input(Component component, Character character, int[][] map) {
+    public Input(Component component, Hero hero) {
         this.component = component;
-        this.character = character;
-        this.map = map;
+        this.hero = hero;
 
         initMouseKeys();
         initKeys();
@@ -65,7 +62,7 @@ public class Input implements MouseListener, KeyListener {
     private void updateMouse() {
         Point oldMousePos = mousePos;
         mousePos = MouseInfo.getPointerInfo().getLocation();
-        character.turn((oldMousePos.x - mousePos.x) * sensitivity);
+        hero.turn((oldMousePos.x - mousePos.x) * sensitivity);
         correctMouse();
     }
 
@@ -84,20 +81,20 @@ public class Input implements MouseListener, KeyListener {
 
     private void updateKeys() {
         if (mouseKeys.get(MouseEvent.BUTTON1))
-            character.shoot();
+            hero.shoot();
         if (mouseKeys.get(MouseEvent.BUTTON3))
-            character.aim();
+            hero.aim();
 
         if (keys.get(KeyEvent.VK_W))
-            character.forward();
+            hero.forward();
         if (keys.get(KeyEvent.VK_S))
-            character.backward();
+            hero.backward();
         if (keys.get(KeyEvent.VK_A))
-            character.left();
+            hero.left();
         if (keys.get(KeyEvent.VK_D))
-            character.right();
+            hero.right();
         if (keys.get(KeyEvent.VK_SHIFT))
-            character.sprint();
+            hero.sprint();
     }
 
     public void mouseEntered(MouseEvent e) {

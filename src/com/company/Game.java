@@ -1,5 +1,7 @@
 package com.company;
 
+import javafx.geometry.Point2D;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,7 +15,7 @@ public class Game extends JFrame {
     private int level = 0;
 
     private Camera camera;
-    private Character character;
+    private Hero hero;
     private Input input;
 
     private LinkedList<int[][]> maps = new LinkedList<>();
@@ -39,13 +41,16 @@ public class Game extends JFrame {
 
     private void newGame() {
         int[][] map = maps.get(level);
-        character = new Character(2.5, 2.5, map);
+        Character.setMap(map);
+        Camera.setMap(map);
 
-        input = new Input(this, character, map);
+        hero = new Hero(2.5, 2.5, new Point2D(1, 0));
+
+        input = new Input(this, hero);
         addMouseListener(input);
         addKeyListener(input);
 
-        camera = new Camera(resX, resY, character, map);
+        camera = new Camera(resX, resY, hero);
         getContentPane().add(camera);
 
         getContentPane().setCursor(Toolkit.getDefaultToolkit().
@@ -57,7 +62,7 @@ public class Game extends JFrame {
             long time = System.currentTimeMillis();
 
             input.update();
-            character.update();
+            hero.update();
             repaint();
 
             try {
@@ -68,9 +73,9 @@ public class Game extends JFrame {
     }
 
     private void initMaps() {
-        maps.add(new int[][]{{6, 6, 6, 6},
-                {6, 0, 0, 6},
-                {6, 0, 0, 6},
-                {6, 6, 6, 6}});
+        maps.add(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1},
+                {1, 0, 0, 1, 0, 0, 0, 1},
+                {1, 1, 0, 0, 0, 1, 0, 1},
+                {1, 1, 1, 1, 1, 1, 1, 1}});
     }
 }
