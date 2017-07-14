@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
  * Created by Lenovo on 10.07.2017.
  */
 public class Camera extends JPanel {
-    private final int resX, resY, wallHeight = 300;
+    private final int resX, resY, wallHeight;
 
     private double fov = 66 * (int) Math.PI / 180;
 
@@ -24,6 +24,7 @@ public class Camera extends JPanel {
     public Camera(int resX, int resY, Character character, int[][] map) {
         this.resX = resX;
         this.resY = resY;
+        this.wallHeight = resY;
         this.character = character;
         this.map = map;
 
@@ -58,5 +59,8 @@ public class Camera extends JPanel {
         }
 
         g.drawImage(rendered, 0, 0, null);
+
+        BufferedImage viewfinder = Textures.getImages().get(Textures.Image.VIEWFINDER);
+        g.drawImage(viewfinder, (resX - viewfinder.getWidth()) / 2, (resY - viewfinder.getHeight()) / 2, null);
     }
 }

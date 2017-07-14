@@ -31,7 +31,7 @@ public class Character {
         }
     }
 
-    Pair<Point2D, Boolean> collisionInfo(Point2D vec) {     // TODO
+    Pair<Point2D, Boolean> collisionInfo(Point2D vec) {
         double tg = vec.getY() / vec.getX(), diffY = Math.abs(tg) * Math.signum(vec.getY()), diffX = 1 / Math.abs(tg) * Math.signum(vec.getX()),
                 x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY());
         Point2D closer = null, px = new Point2D(x, (x - pos.getX()) * tg + pos.getY()), py = new Point2D((y - pos.getY()) / tg + pos.getX(), y);
