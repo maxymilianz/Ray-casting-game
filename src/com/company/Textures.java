@@ -15,6 +15,7 @@ public class Textures {
         BULLET, L_BULLET, R_BULLET, SHOT,
     }
 
+    private static Hashtable<Sprite.Sprites, Sprite> sprites = new Hashtable<>();
     private static Hashtable<Integer, Sprite> blocks = new Hashtable<>();
     private static Hashtable<Image, Sprite> images = new Hashtable<>();
     private static Hashtable<Weapon.Weapons, Sprite> weapons = new Hashtable<>();
@@ -24,6 +25,8 @@ public class Textures {
             initBlocks();
             initImages();
             initWeapons();
+
+            initSprites();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -52,6 +55,24 @@ public class Textures {
         blocks.put(6, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/Stk textures/wood.png"))}));
     }
 
+    private static void initSprites() throws IOException {
+        sprites.put(Sprite.Sprites.S_SWORD, weapons.get(Weapon.Weapons.S_SWORD));
+
+        sprites.put(Sprite.Sprites.VIEWFINDER, images.get(Image.VIEWFINDER));
+
+        sprites.put(Sprite.Sprites.BULLET, images.get(Image.BULLET));
+        sprites.put(Sprite.Sprites.L_BULLET, images.get(Image.L_BULLET));
+        sprites.put(Sprite.Sprites.R_BULLET, images.get(Image.R_BULLET));
+        sprites.put(Sprite.Sprites.SHOT, images.get(Image.SHOT));
+
+        sprites.put(Sprite.Sprites.BG1, blocks.get(1));
+        sprites.put(Sprite.Sprites.BG2, blocks.get(2));
+        sprites.put(Sprite.Sprites.BG3, blocks.get(3));
+        sprites.put(Sprite.Sprites.BG4, blocks.get(4));
+        sprites.put(Sprite.Sprites.BG5, blocks.get(5));
+        sprites.put(Sprite.Sprites.BG6, blocks.get(6));
+    }
+
     public static Hashtable<Weapon.Weapons, Sprite> getWeapons() {
         return weapons;
     }
@@ -62,5 +83,9 @@ public class Textures {
 
     public static Hashtable<Integer, Sprite> getBlocks() {
         return blocks;
+    }
+
+    public static Hashtable<Sprite.Sprites, Sprite> getSprites() {
+        return sprites;
     }
 }

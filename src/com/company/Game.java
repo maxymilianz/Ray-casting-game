@@ -63,6 +63,7 @@ public class Game extends JFrame {
 
             input.update();
             hero.update();
+            Sprite.updateAll();
             repaint();
 
             try {
