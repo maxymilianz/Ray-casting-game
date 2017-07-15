@@ -81,7 +81,7 @@ public class Input implements MouseListener, KeyListener {
 
     private void updateKeys() {
         if (mouseKeys.get(MouseEvent.BUTTON1))
-            hero.shoot();
+            hero.attack();
         if (mouseKeys.get(MouseEvent.BUTTON3))
             hero.aim();
 

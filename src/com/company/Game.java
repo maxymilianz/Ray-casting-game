@@ -42,9 +42,9 @@ public class Game extends JFrame {
     private void newGame() {
         int[][] map = maps.get(level);
         Character.setMap(map);
-        Camera.setMap(map);
+        Weapon.initWeapons();
 
-        hero = new Hero(2.5, 2.5, new Point2D(1, 0));
+        hero = new Hero(0.03, 0.06, 100, 100, 100, 100, new Point2D(2.5, 2.5), new Point2D(1, 0), new LinkedList<>());
 
         input = new Input(this, hero);
         addMouseListener(input);
@@ -74,8 +74,8 @@ public class Game extends JFrame {
 
     private void initMaps() {
         maps.add(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1},
-                {1, 0, 0, 1, 0, 0, 0, 1},
-                {1, 1, 0, 0, 0, 1, 0, 1},
-                {1, 1, 1, 1, 1, 1, 1, 1}});
+                             {1, 0, 0, 1, 0, 0, 0, 1},
+                             {1, 1, 0, 0, 0, 1, 0, 1},
+                             {1, 1, 1, 1, 1, 1, 1, 1}});
     }
 }

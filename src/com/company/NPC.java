@@ -11,8 +11,8 @@ import java.util.LinkedList;
 public class NPC extends Character {
     BufferedImage img;
 
-    public NPC(double speed, double sprintSpeed, int health, int mana, int stamina, Point2D pos, Point2D dir, LinkedList<Weapon> weapons, BufferedImage img) {
-        super(speed, sprintSpeed, health, mana, stamina, pos, dir, weapons);
+    public NPC(double speed, double sprintSpeed, int health, int mana, int stamina, int maxStamina, Point2D pos, Point2D dir, LinkedList<Weapon.Weapons> weapons, BufferedImage img) {
+        super(speed, sprintSpeed, health, mana, stamina, maxStamina, pos, dir, weapons);
         this.img = img;
     }
 }
