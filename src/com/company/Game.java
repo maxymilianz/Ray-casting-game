@@ -75,7 +75,7 @@ public class Game extends JFrame {
     private void initMaps() {
         maps.add(new int[][]{{1, 1, 1, 1, 1, 1, 1, 1},
                              {1, 0, 0, 1, 0, 0, 0, 1},
-                             {1, 1, 0, 0, 0, 1, 0, 1},
+                             {1, 0, 0, 0, 0, 1, 0, 1},
                              {1, 1, 1, 1, 1, 1, 1, 1}});
     }
 }

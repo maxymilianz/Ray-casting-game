@@ -62,7 +62,7 @@ public class Character {
         }
     }
 
-    void go(double speed, Point2D dir) {
+    private void go(double speed, Point2D dir) {
         pos = pos.add(dir.multiply(speed));
         Point2D safePos = pos.add(new Point2D(dir.getX() < 0 ? -minDistToBlock : minDistToBlock, dir.getY() < 0 ? -minDistToBlock : minDistToBlock));
 
@@ -127,12 +127,13 @@ public class Character {
     }
 
     void sprint() {
-        if (stamina > 0)
+        if (stamina > 0) {
             go(sprintSpeed, dir);
-        stamina -= 2;
+            stamina -= 2;
+        }
     }
 
-    void normalizeDir() {
+    private void normalizeDir() {
         dir = dir.multiply(1 / dir.magnitude());
     }
 
