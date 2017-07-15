@@ -7,7 +7,7 @@ import java.util.Hashtable;
  */
 public class Weapon {
     enum Weapons {
-        S_SWORD
+        NONE, S_SWORD
     }
 
     int power, accuracy;

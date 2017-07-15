@@ -34,6 +34,7 @@ public class Textures {
     }
 
     private static void initWeapons() throws IOException {
+        weapons.put(Weapon.Weapons.NONE, new Sprite());
         weapons.put(Weapon.Weapons.S_SWORD, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/scithersword.png"))}));
     }
 
