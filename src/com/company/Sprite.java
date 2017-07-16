@@ -11,7 +11,8 @@ public class Sprite {
         VIEWFINDER,
         BULLET, L_BULLET, R_BULLET, SHOT,
         BG1, BG2, BG3, BG4, BG5, BG6,
-        B_STANDING, B_BACK, B_LEFT, B_RIGHT, B_FALLING, B_CASTING, B_ATTACKING
+        B_STANDING, B_FALLING, B_FALLED, B_CASTING, B_WALKING,
+        M_STANDING, M_FALLING, M_FALLED, M_CASTING, M_WALKING
     }
 
     private int i = 0, time = 0;

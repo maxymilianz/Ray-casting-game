@@ -9,11 +9,11 @@ import java.util.LinkedList;
  */
 public class NPC extends Character {
     enum Position {
-        STANDING, BACK, LEFT, RIGHT, FALLING, CASTING, ATTACKING
+        STANDING, BACK, LEFT, RIGHT, FALLING, FALLED, CASTING, ATTACKING, WALKING
     }
 
     enum NPCs {
-        BALDRIC, KNIGHT, ORC        // TODO MAGE
+        BALDRIC, KNIGHT, ORC, MAGE        // TODO MAGE
     }
 
     enum Attitude {

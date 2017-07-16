@@ -36,12 +36,10 @@ public class Textures {
     private static void initNPCs() {
         Hashtable<NPC.Position, Sprite.Sprites> tempBaldric = new Hashtable<>();
         tempBaldric.put(NPC.Position.STANDING, Sprite.Sprites.B_STANDING);
-        tempBaldric.put(NPC.Position.BACK, Sprite.Sprites.B_BACK);
-        tempBaldric.put(NPC.Position.LEFT, Sprite.Sprites.B_LEFT);
-        tempBaldric.put(NPC.Position.RIGHT, Sprite.Sprites.B_RIGHT);
         tempBaldric.put(NPC.Position.FALLING, Sprite.Sprites.B_FALLING);
+        tempBaldric.put(NPC.Position.FALLED, Sprite.Sprites.B_FALLED);
         tempBaldric.put(NPC.Position.CASTING, Sprite.Sprites.B_CASTING);
-        tempBaldric.put(NPC.Position.ATTACKING, Sprite.Sprites.B_ATTACKING);
+        tempBaldric.put(NPC.Position.WALKING, Sprite.Sprites.B_WALKING);
 
         NPCs.put(NPC.NPCs.BALDRIC, tempBaldric);
 
@@ -73,6 +71,21 @@ public class Textures {
         sprites.put(Sprite.Sprites.BG4, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/Stk textures/palmtree.png"))}));
         sprites.put(Sprite.Sprites.BG5, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/Stk textures/sand_stone.png"))}));
         sprites.put(Sprite.Sprites.BG6, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/Stk textures/wood.png"))}));
+
+        sprites.put(Sprite.Sprites.B_STANDING, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/NPCs/baldric/standing.png"))}));
+        sprites.put(Sprite.Sprites.B_FALLING, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/NPCs/baldric/falling0.png")),
+                ImageIO.read(new File("res/NPCs/baldric/falling1.png")), ImageIO.read(new File("res/NPCs/baldric/falling2.png")),
+                ImageIO.read(new File("res/NPCs/baldric/falling3.png"))}));
+        sprites.put(Sprite.Sprites.B_FALLED, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/NPCs/baldric/falled.png"))}));
+        sprites.put(Sprite.Sprites.B_CASTING, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/NPCs/baldric/casting0.png")),
+                ImageIO.read(new File("res/NPCs/baldric/casting1.png")), ImageIO.read(new File("res/NPCs/baldric/casting2.png")),
+                ImageIO.read(new File("res/NPCs/baldric/casting3.png")), ImageIO.read(new File("res/NPCs/baldric/casting4.png")),
+                ImageIO.read(new File("res/NPCs/baldric/casting5.png"))}));
+        sprites.put(Sprite.Sprites.B_WALKING, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/NPCs/baldric/walking0.png")),
+                ImageIO.read(new File("res/NPCs/baldric/walking1.png")), ImageIO.read(new File("res/NPCs/baldric/walking2.png")),
+                ImageIO.read(new File("res/NPCs/baldric/walking3.png")), ImageIO.read(new File("res/NPCs/baldric/walking4.png")),
+                ImageIO.read(new File("res/NPCs/baldric/walking5.png")), ImageIO.read(new File("res/NPCs/baldric/walking6.png")),
+                ImageIO.read(new File("res/NPCs/baldric/walking7.png"))}));
     }
 
     public static Hashtable<Weapon.Weapons, Sprite.Sprites> getWeapons() {
