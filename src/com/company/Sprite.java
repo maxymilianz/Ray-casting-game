@@ -7,13 +7,15 @@ import java.awt.image.BufferedImage;
  */
 public class Sprite {
     enum Sprites {
+        NULL,
         S_SWORD,
         VIEWFINDER,
         BULLET, L_BULLET, R_BULLET, SHOT,
-        BG1, BG2, BG3, BG4, BG5, BG6
+        BG1, BG2, BG3, BG4, BG5, BG6,
+        B_STANDING, B_BACK, B_LEFT, B_RIGHT, B_FALLING, B_CASTING, B_ATTACKING
     }
 
-    private int i = 0;
+    private int i = 0, time = 0;
 
     private BufferedImage[] images;
 
@@ -31,9 +33,12 @@ public class Sprite {
     }
 
     void update() {
-        i++;
-        if (i == images.length)
-            i = 0;
+        time++;
+        if (time % 10 == 0) {
+            i++;
+            if (i == images.length)
+                i = 0;
+        }
     }
 
     BufferedImage getImage() {

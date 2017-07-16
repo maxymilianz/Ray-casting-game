@@ -42,7 +42,7 @@ public class Camera extends JPanel {
 
             int j = 0, h = (int) (tempH * dir.magnitude() / pos.distance(collisionPoint)), emptyH = (resY - h) / 2;
 
-            BufferedImage img = Textures.getBlocks().get(hero.block(vec, collisionPoint)).getImage();
+            BufferedImage img = Textures.getSprites().get(Textures.getBlocks().get(hero.block(vec, collisionPoint))).getImage();
             double tempX = (pxSide ? collisionPoint.getY() : collisionPoint.getX()) % 1;
             tempX += tempX < 0 ? 1 : 0;
             int x = (int) (tempX * img.getWidth());
@@ -60,7 +60,7 @@ public class Camera extends JPanel {
 
         g.drawImage(rendered, 0, 0, null);
 
-        BufferedImage img = Textures.getWeapons().getOrDefault(hero.getWeapon(), new Sprite()).getImage();     // weapon
+        BufferedImage img = Textures.getSprites().get(Textures.getWeapons().get(hero.getWeapon())).getImage();     // weapon
         if (img != null) {
             AffineTransform at = new AffineTransform();
             at.translate(img.getWidth() / 2, img.getHeight() / 2);
@@ -70,7 +70,7 @@ public class Camera extends JPanel {
             g.drawImage(op.filter(img, null), weaponX, weaponY, null);
         }
 
-        BufferedImage viewfinder = Textures.getImages().get(Textures.Image.VIEWFINDER).getImage();     // viewfinder
+        BufferedImage viewfinder = Textures.getSprites().get(Sprite.Sprites.VIEWFINDER).getImage();     // viewfinder
         g.drawImage(viewfinder, (resX - viewfinder.getWidth()) / 2, (resY - viewfinder.getHeight()) / 2, null);
     }
 }

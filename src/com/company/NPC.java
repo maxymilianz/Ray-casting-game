@@ -2,17 +2,31 @@ package com.company;
 
 import javafx.geometry.Point2D;
 
-import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 /**
  * Created by Lenovo on 14.07.2017.
  */
 public class NPC extends Character {
-    BufferedImage img;
+    enum Position {
+        STANDING, BACK, LEFT, RIGHT, FALLING, CASTING, ATTACKING
+    }
 
-    public NPC(double speed, double sprintSpeed, int health, int mana, int stamina, int maxStamina, Point2D pos, Point2D dir, LinkedList<Weapon.Weapons> weapons, BufferedImage img) {
+    enum Attitude {
+        GOOD, NEUTRAL, EVIL
+    }
+
+    enum NPCs {
+        BALDRIC, KNIGHT, ORC        // TODO MAGE
+    }
+
+    Attitude attitude;
+    NPCs type;
+
+    public NPC(double speed, double sprintSpeed, int health, int mana, int stamina, int maxStamina, Point2D pos, Point2D dir, LinkedList<Weapon.Weapons> weapons, Attitude attitude,
+               NPCs type) {
         super(speed, sprintSpeed, health, mana, stamina, maxStamina, pos, dir, weapons);
-        this.img = img;
+        this.attitude = attitude;
+        this.type = type;
     }
 }
