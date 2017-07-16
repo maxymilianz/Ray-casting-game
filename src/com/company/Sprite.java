@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
  */
 public class Sprite {
     enum Sprites {
-        NULL,
         S_SWORD,
         VIEWFINDER,
         BULLET, L_BULLET, R_BULLET, SHOT,
@@ -29,7 +28,7 @@ public class Sprite {
 
     static void updateAll() {
         for (Sprites s : Sprites.values())
-            Textures.getSprites().get(s).update();
+            Textures.getSprites().getOrDefault(s, new Sprite()).update();
     }
 
     void update() {

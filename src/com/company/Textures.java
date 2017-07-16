@@ -30,7 +30,6 @@ public class Textures {
     }
 
     private static void initWeapons() {
-        weapons.put(Weapon.Weapons.NONE, Sprite.Sprites.NULL);
         weapons.put(Weapon.Weapons.S_SWORD, Sprite.Sprites.S_SWORD);
     }
 
@@ -59,8 +58,6 @@ public class Textures {
     }
 
     private static void initSprites() throws IOException {
-        sprites.put(Sprite.Sprites.NULL, new Sprite());
-
         sprites.put(Sprite.Sprites.S_SWORD, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/scithersword.png"))}));
 
         sprites.put(Sprite.Sprites.VIEWFINDER, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/viewfinder.png"))}));

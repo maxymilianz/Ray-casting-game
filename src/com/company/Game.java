@@ -86,10 +86,19 @@ public class Game extends JFrame {
 
         for (int i = 0; i < nrOfEnemies; i++) {
             int x = r.nextInt(map[0].length), y = r.nextInt(map.length);
+            boolean collides = true;
 
-            while (map[y][x] != 0) {
-                x = r.nextInt(map[0].length);
-                y = r.nextInt(map.length);
+            while (collides) {
+                collides = map[y][x] != 0;
+
+                for (NPC j : NPCs)
+                    if (!collides)
+                        collides = x == (int) j.getPos().getX() && y == (int) j.getPos().getY();
+
+                if (collides) {
+                    x = r.nextInt(map[0].length);
+                    y = r.nextInt(map.length);
+                }
             }
 
             NPCs.add(new NPC(0.03, 0.06, 10, 10, 10, 10, new Point2D(x + 0.5, y + 0.5), new Point2D(0, 1),
