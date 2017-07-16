@@ -11,8 +11,8 @@ public class Sprite {
         VIEWFINDER,
         BULLET, L_BULLET, R_BULLET, SHOT,
         BG1, BG2, BG3, BG4, BG5, BG6,
-        B_STANDING, B_FALLING, B_FALLED, B_CASTING, B_WALKING,
-        M_STANDING, M_FALLING, M_FALLED, M_CASTING, M_WALKING
+        B_STANDING, B_FALLING, B_FALLED, B_CASTING, B_WALKING,      // baldric
+        M_STANDING, M_FALLING, M_FALLED, M_CASTING, M_WALKING       // mage
     }
 
     private int i = 0, time = 0;
@@ -32,7 +32,7 @@ public class Sprite {
             Textures.getSprites().getOrDefault(s, new Sprite()).update();
     }
 
-    void update() {
+    private void update() {
         time++;
         if (time % 10 == 0) {
             i++;
