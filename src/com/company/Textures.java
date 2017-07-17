@@ -92,6 +92,10 @@ public class Textures {
         return weapons;
     }
 
+    public static Hashtable<NPC.NPCs, Hashtable<NPC.Position, Sprite.Sprites>> getNPCs() {
+        return NPCs;
+    }
+
     public static Hashtable<Integer, Sprite.Sprites> getBlocks() {
         return blocks;
     }
