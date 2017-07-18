@@ -12,6 +12,8 @@ import java.util.Hashtable;
 public class Textures {
     private static Hashtable<Sprite.Sprites, Sprite> sprites = new Hashtable<>();
     private static Hashtable<Integer, Sprite.Sprites> blocks = new Hashtable<>();
+    private static Hashtable<Integer, Sprite.Sprites> floors = new Hashtable<>();
+    private static Hashtable<Integer, Sprite.Sprites> ceilings = new Hashtable<>();
     private static Hashtable<NPC.NPCs, Hashtable<NPC.Position, Sprite.Sprites>> NPCs = new Hashtable<>();
     private static Hashtable<Weapon.Weapons, Sprite.Sprites> weapons = new Hashtable<>();
     private static Hashtable<RangedWeapon.Bullets, Sprite.Sprites> bullets = new Hashtable<>();
@@ -21,6 +23,8 @@ public class Textures {
             initSprites();
 
             initBlocks();
+            initFloors();
+            initCeilings();
             initNPCs();
             initWeapons();
         }
@@ -44,6 +48,14 @@ public class Textures {
         NPCs.put(NPC.NPCs.BALDRIC, tempBaldric);
 
         // TODO REST
+    }
+
+    private static void initCeilings() {
+        ceilings.put(0, Sprite.Sprites.CEILING0);
+    }
+
+    private static void initFloors() {
+        floors.put(0, Sprite.Sprites.FLOOR0);
     }
 
     private static void initBlocks() {
@@ -72,6 +84,10 @@ public class Textures {
         sprites.put(Sprite.Sprites.BG5, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/Stk textures/sand_stone.png"))}));
         sprites.put(Sprite.Sprites.BG6, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/Stk textures/wood.png"))}));
 
+        sprites.put(Sprite.Sprites.FLOOR0, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/pie/rustytiles/rustytiles01_diff.jpg"))}));
+
+        sprites.put(Sprite.Sprites.CEILING0, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/ceilings/0m.jpg"))}));
+
         sprites.put(Sprite.Sprites.B_STANDING, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/NPCs/baldric/standing.png"))}));
         sprites.put(Sprite.Sprites.B_FALLING, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/NPCs/baldric/falling0.png")),
                 ImageIO.read(new File("res/NPCs/baldric/falling1.png")), ImageIO.read(new File("res/NPCs/baldric/falling2.png")),
@@ -94,6 +110,18 @@ public class Textures {
 
     public static Hashtable<NPC.NPCs, Hashtable<NPC.Position, Sprite.Sprites>> getNPCs() {
         return NPCs;
+    }
+
+    public static Hashtable<RangedWeapon.Bullets, Sprite.Sprites> getBullets() {
+        return bullets;
+    }
+
+    public static Hashtable<Integer, Sprite.Sprites> getCeilings() {
+        return ceilings;
+    }
+
+    public static Hashtable<Integer, Sprite.Sprites> getFloors() {
+        return floors;
     }
 
     public static Hashtable<Integer, Sprite.Sprites> getBlocks() {

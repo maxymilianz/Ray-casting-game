@@ -14,21 +14,25 @@ import java.util.LinkedList;
  * Created by Lenovo on 10.07.2017.
  */
 public class Camera extends JPanel {
-    private final int resX, resY, wallHeight, weaponX, weaponY;
+    private final int resX, resY, wallHeight, weaponX, weaponY, floorSize = 4, ceilingSize = 4, halfResY;      // floorSize and ceilingSize are in tiles
 
     private BufferedImage rendered;
 
     private Hero hero;
 
-    LinkedList<NPC> NPCs, NPCsToDraw;
+    private int[][] map;
 
-    public Camera(int resX, int resY, Hero hero, LinkedList<NPC> NPCs) {
+    private LinkedList<NPC> NPCs, NPCsToDraw;
+
+    public Camera(int resX, int resY, Hero hero, int[][] map, LinkedList<NPC> NPCs) {
         this.resX = resX;
         this.resY = resY;
-        this.wallHeight = resY;
+        wallHeight = resY;
+        halfResY = resY / 2;
         weaponX = resX - 1000;
         weaponY = resY - 500;
         this.hero = hero;
+        this.map = map;
         this.NPCs = NPCs;
 
         rendered = new BufferedImage(resX, resY, BufferedImage.TYPE_INT_RGB);
@@ -66,8 +70,8 @@ public class Camera extends JPanel {
             double vecAngle = vec.angle(zero), dirAngle = dir.angle(zero);
             vecAngle = vec.getY() < 0 ? 360 - vecAngle : vecAngle;
             dirAngle = dir.getY() < 0 ? 360 - dirAngle : dirAngle;
-            BufferedImage img = Textures.getSprites().get(Textures.getNPCs().get(i.getType()).get(i.getPosition())).getImage();
-            perp = perp.multiply(1 / vec.magnitude() * img.getWidth() / Textures.getSprites().get(Textures.getBlocks().get(1)).getImage().getWidth());
+            perp = perp.multiply(1 / vec.magnitude() * Textures.getSprites().get(Textures.getNPCs().get(i.getType()).get(i.getPosition())).getImage().getWidth() /
+                    Textures.getSprites().get(Textures.getBlocks().get(1)).getImage().getWidth());
             vec = vec.add(perp.multiply(vecAngle < dirAngle ? 1 : -1));
 
             if (vec.angle(dir) < hero.getFov() * 90 / Math.PI)
@@ -75,7 +79,7 @@ public class Camera extends JPanel {
         }
     }
 
-    private void render(Graphics g) {
+    private void render(Graphics g) {       // TODO DRAW NPCS HERE
         double tempH = wallHeight / hero.getFov() * hero.getDefaultFov();
         Point2D dir = hero.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(hero.getFov() / 2) * dir.magnitude()), vec = dir.add(plane),
                 deltaPlane = plane.multiply((double) 2 / resX), pos = hero.getPos();
@@ -85,25 +89,32 @@ public class Camera extends JPanel {
             Point2D collisionPoint = collisionInfo.getKey();
             boolean pxSide = collisionInfo.getValue();
 
-            for (NPC j : NPCsToDraw) {
-                
-            }
-
-            int j = 0, h = (int) (tempH * dir.magnitude() / pos.distance(collisionPoint)), emptyH = (resY - h) / 2;
+            int j = 0, h = (int) (tempH * vec.magnitude() / pos.distance(collisionPoint)), emptyH = (resY - h) / 2;
 
             BufferedImage img = Textures.getSprites().get(Textures.getBlocks().get(hero.block(vec, collisionPoint))).getImage();
             double tempX = (pxSide ? collisionPoint.getY() : collisionPoint.getX()) % 1;
             tempX += tempX < 0 ? 1 : 0;
             int x = (int) (tempX * img.getWidth());
 
-            for (; j < emptyH; j++)
-                rendered.setRGB(i, j, Color.blue.getRGB());
-            for (; j < resY && j < resY - emptyH - 1; j++) {
-                int y = (j - emptyH) * img.getHeight() / h;
-                rendered.setRGB(i, j, img.getRGB(x, y));
+            for (; j < emptyH; j++) {
+                double d = halfResY * vec.magnitude() / (halfResY - j);
+                Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
+                int tile = map[(int) p.getY()][(int) p.getX()];
+
+                BufferedImage ceiling = Textures.getSprites().get(Textures.getCeilings().getOrDefault(tile, Sprite.Sprites.CEILING0)).getImage();
+                rendered.setRGB(i, j, ceiling.getRGB((int) ((p.getX() % ceilingSize) / ceilingSize * ceiling.getWidth()),
+                        (int) ((p.getY() % ceilingSize) / ceilingSize * ceiling.getHeight())));
             }
-            for (; j < resY; j++)
-                rendered.setRGB(i, j, Color.gray.getRGB());
+            for (; j < resY && j < resY - emptyH - 1; j++)
+                rendered.setRGB(i, j, img.getRGB(x, (j - emptyH) * img.getHeight() / h));
+            for (; j < resY; j++) {
+                double d = halfResY * vec.magnitude() / (j - halfResY);
+                Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
+                int tile = map[(int) p.getY()][(int) p.getX()];
+
+                BufferedImage floor = Textures.getSprites().get(Textures.getFloors().getOrDefault(tile, Sprite.Sprites.FLOOR0)).getImage();
+                rendered.setRGB(i, j, floor.getRGB((int) ((p.getX() % floorSize) / floorSize * floor.getWidth()), (int) ((p.getY() % floorSize) / floorSize * floor.getHeight())));
+            }
         }
 
         g.drawImage(rendered, 0, 0, null);

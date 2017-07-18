@@ -53,7 +53,7 @@ public class Game extends JFrame {
         addMouseListener(input);
         addKeyListener(input);
 
-        camera = new Camera(resX, resY, hero, NPCs);
+        camera = new Camera(resX, resY, hero, map, NPCs);
         getContentPane().add(camera);
 
         initNPCs();

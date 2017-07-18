@@ -12,7 +12,9 @@ public class Sprite {
         BULLET, L_BULLET, R_BULLET, SHOT,
         BG1, BG2, BG3, BG4, BG5, BG6,
         B_STANDING, B_FALLING, B_FALLED, B_CASTING, B_WALKING,      // baldric
-        M_STANDING, M_FALLING, M_FALLED, M_CASTING, M_WALKING       // mage
+        M_STANDING, M_FALLING, M_FALLED, M_CASTING, M_WALKING,       // mage
+        FLOOR0,
+        CEILING0
     }
 
     private int i = 0, time = 0;
