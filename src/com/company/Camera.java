@@ -14,7 +14,8 @@ import java.util.LinkedList;
  * Created by Lenovo on 10.07.2017.
  */
 public class Camera extends JPanel {
-    private final int resX, resY, wallHeight, weaponX, weaponY, floorSize = 4, ceilingSize = 4, halfResY;      // floorSize and ceilingSize are in tiles
+    private final int resX, resY, wallHeight, weaponX, weaponY, floorSize = 4, ceilingSize = 4, halfResY, visibility = 8, fogRGB = Color.black.getRGB();
+            // floorSize and ceilingSize are in tiles
 
     private BufferedImage rendered;
 
@@ -94,27 +95,51 @@ public class Camera extends JPanel {
             BufferedImage img = Textures.getSprites().get(Textures.getBlocks().get(hero.block(vec, collisionPoint))).getImage();
             int x = (int) (((collisionInfo.getValue() ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth());
 
+            float fogRatio = (float) pos.distance(collisionPoint);
+            fogRatio /= fogRatio < visibility ? visibility : 1;
+
             for (; j < emptyH; j++) {
                 double d = halfResY * vec.magnitude() / (wallCenterZ - j) * fovRatio;
                 Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
                 int tile = map[(int) p.getY()][(int) p.getX()];
 
-                BufferedImage ceiling = Textures.getSprites().get(Textures.getCeilings().getOrDefault(tile, Sprite.Sprites.CEILING0)).getImage();
-                rendered.setRGB(i, j, ceiling.getRGB((int) ((p.getX() % ceilingSize) / ceilingSize * ceiling.getWidth()),
-                        (int) ((p.getY() % ceilingSize) / ceilingSize * ceiling.getHeight())));
+                if (d < visibility) {
+                    BufferedImage ceiling = Textures.getSprites().get(Textures.getCeilings().getOrDefault(tile, Sprite.Sprites.CEILING0)).getImage();
+                    rendered.setRGB(i, j, mix(ceiling.getRGB((int) ((p.getX() % ceilingSize) / ceilingSize * ceiling.getWidth()),
+                            (int) ((p.getY() % ceilingSize) / ceilingSize * ceiling.getHeight())), fogRGB, (float) d / visibility));
+                }
+                else
+                    rendered.setRGB(i, j, fogRGB);
             }
             for (; j < resY && j < emptyH + h; j++)
-                rendered.setRGB(i, j, img.getRGB(x, (j - emptyH) * img.getHeight() / h));
+                rendered.setRGB(i, j, fogRatio < 1 ? mix(img.getRGB(x, (j - emptyH) * img.getHeight() / h), fogRGB, fogRatio) : fogRGB);
             for (; j < resY; j++) {
                 double d = halfResY * vec.magnitude() / (j - wallCenterZ) * fovRatio;
                 Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
                 int tile = map[(int) p.getY()][(int) p.getX()];
 
-                BufferedImage floor = Textures.getSprites().get(Textures.getFloors().getOrDefault(tile, Sprite.Sprites.FLOOR0)).getImage();
-                rendered.setRGB(i, j, floor.getRGB((int) ((p.getX() % floorSize) / floorSize * floor.getWidth()), (int) ((p.getY() % floorSize) / floorSize * floor.getHeight())));
+                if (d < visibility) {
+                    BufferedImage floor = Textures.getSprites().get(Textures.getFloors().getOrDefault(tile, Sprite.Sprites.FLOOR0)).getImage();
+                    rendered.setRGB(i, j, mix(floor.getRGB((int) ((p.getX() % floorSize) / floorSize * floor.getWidth()),
+                            (int) ((p.getY() % floorSize) / floorSize * floor.getHeight())), fogRGB, (float) d / visibility));
+                }
+                else
+                    rendered.setRGB(i, j, fogRGB);
             }
         }
 
         g.drawImage(rendered, 0, 0, null);
+    }
+
+    private int mix (int c0, int c1, float ratio) {     // ratio of (c1 - all) to all
+        ratio = ratio < 0f ? 0f : ratio > 1f ? 1f : ratio;
+        float iRatio = 1.0f - ratio;
+
+        int a = (int) ((c0 >> 24 & 0xff) * iRatio + (c1 >> 24 & 0xff) * ratio);
+        int r = (int) (((c0 & 0xff0000) >> 16) * iRatio + ((c1 & 0xff0000) >> 16) * ratio);
+        int g = (int) (((c0 & 0xff00) >> 8) * iRatio + ((c1 & 0xff00) >> 8) * ratio);
+        int b = (int) ((c0 & 0xff) * iRatio + (c1 & 0xff) * ratio);
+
+        return a << 24 | r << 16 | g << 8 | b;
     }
 }
