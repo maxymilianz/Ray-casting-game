@@ -81,7 +81,7 @@ public class Camera extends JPanel {
 
     private void render(Graphics g) {       // TODO DRAW NPCS HERE
         int wallCenterZ = (int) (halfResY * hero.getzDir());
-        double tempH = wallHeight / hero.getFov() * hero.getDefaultFov();
+        double fovRatio = hero.getDefaultFov() / hero.getFov();
         Point2D dir = hero.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(hero.getFov() / 2) * dir.magnitude()), vec = dir.add(plane),
                 deltaPlane = plane.multiply((double) 2 / resX), pos = hero.getPos();
 
@@ -89,13 +89,13 @@ public class Camera extends JPanel {
             Pair<Point2D, Boolean> collisionInfo = hero.collisionInfo(vec);
             Point2D collisionPoint = collisionInfo.getKey();
 
-            int j = 0, h = (int) (tempH * vec.magnitude() / pos.distance(collisionPoint)), emptyH = wallCenterZ - h / 2;
+            int j = 0, h = (int) (wallHeight * fovRatio * vec.magnitude() / pos.distance(collisionPoint)), emptyH = wallCenterZ - h / 2;
 
             BufferedImage img = Textures.getSprites().get(Textures.getBlocks().get(hero.block(vec, collisionPoint))).getImage();
             int x = (int) (((collisionInfo.getValue() ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth());
 
             for (; j < emptyH; j++) {
-                double d = halfResY * vec.magnitude() / (wallCenterZ - j);
+                double d = halfResY * vec.magnitude() / (wallCenterZ - j) * fovRatio;
                 Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
                 int tile = map[(int) p.getY()][(int) p.getX()];
 
@@ -106,7 +106,7 @@ public class Camera extends JPanel {
             for (; j < resY && j < emptyH + h; j++)
                 rendered.setRGB(i, j, img.getRGB(x, (j - emptyH) * img.getHeight() / h));
             for (; j < resY; j++) {
-                double d = halfResY * vec.magnitude() / (j - wallCenterZ);
+                double d = halfResY * vec.magnitude() / (j - wallCenterZ) * fovRatio;
                 Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
                 int tile = map[(int) p.getY()][(int) p.getX()];
 
