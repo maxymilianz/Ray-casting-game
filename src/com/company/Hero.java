@@ -8,7 +8,7 @@ import java.util.LinkedList;
  * Created by Lenovo on 10.07.2017.
  */
 public class Hero extends Character {
-    private double defaultFov = 66 * Math.PI / 180, aimFov = 45 * Math.PI / 180, fov = defaultFov, deltaFov;
+    private double defaultFov = 66 * Math.PI / 180, aimFov = 45 * Math.PI / 180, fov = defaultFov, deltaFov, zDir = 1;
 
     public Hero(double speed, double sprintSpeed, int health, int mana, int stamina, int maxStamina, Point2D pos, Point2D dir, LinkedList<Weapon.Weapons> weapons) {
         super(speed, sprintSpeed, health, mana, stamina, maxStamina, pos, dir, weapons);
@@ -22,6 +22,11 @@ public class Hero extends Character {
 
         if (deltaFov != 0)
             updateFov();
+    }
+
+    void lookVertical(double delta) {
+        zDir += delta;
+        zDir = zDir < 0 ? 0 : zDir > 2 ? 2 : zDir;
     }
 
     private void updateFov() {
@@ -53,5 +58,9 @@ public class Hero extends Character {
 
     public double getDefaultFov() {
         return defaultFov;
+    }
+
+    public double getzDir() {
+        return zDir;
     }
 }

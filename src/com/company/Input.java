@@ -63,6 +63,7 @@ public class Input implements MouseListener, KeyListener {
         Point oldMousePos = mousePos;
         mousePos = MouseInfo.getPointerInfo().getLocation();
         hero.turn((oldMousePos.x - mousePos.x) * sensitivity);
+        hero.lookVertical((oldMousePos.y - mousePos.y) * sensitivity);
         correctMouse();
     }
 
