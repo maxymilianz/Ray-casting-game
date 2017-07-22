@@ -11,10 +11,15 @@ public class Sprite {
         VIEWFINDER,
         BULLET, L_BULLET, R_BULLET, SHOT,
         BG1, BG2, BG3, BG4, BG5, BG6,
-        B_STANDING, B_FALLING, B_FALLED, B_CASTING, B_WALKING,      // baldric
+        B_STANDING, B_FALLING, B_FALLED, B_CASTING, B_WALKING, B_ATTACKING,      // baldric
         M_STANDING, M_FALLING, M_FALLED, M_CASTING, M_WALKING,       // mage
+        KNIGHT, ORC,
         FLOOR0,
         CEILING0
+    }
+
+    enum View {
+        FRONT, BACK, LEFT, RIGHT
     }
 
     private int i = 0, time = 0;
