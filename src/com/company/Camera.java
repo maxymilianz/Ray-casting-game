@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 /**
@@ -23,7 +24,7 @@ public class Camera extends JPanel {
 
     private int[][] map;
 
-    private LinkedList<NPC> NPCs, NPCsToDraw;
+    private LinkedList<NPC> NPCs;
 
     public Camera(int resX, int resY, Hero hero, int[][] map, LinkedList<NPC> NPCs) {
         this.resX = resX;
@@ -40,7 +41,6 @@ public class Camera extends JPanel {
     }
 
     public void paint(Graphics g) {
-        checkNPCs();
         render(g);
         drawWeapon(g);
         drawViewfinder(g);
@@ -63,8 +63,8 @@ public class Camera extends JPanel {
         }
     }
 
-    private void checkNPCs() {
-        NPCsToDraw = new LinkedList<>();
+    private LinkedList<Pair<NPC, Integer>> checkNPCs() {
+        LinkedList<Pair<NPC, Integer>> NPCsToDraw = new LinkedList<>();
 
         for (NPC i : NPCs) {
             Point2D vec = i.getPos().subtract(hero.getPos()), dir = hero.getDir(), zero = new Point2D(1, 0), perp = new Point2D(-vec.getY(), vec.getX());
@@ -75,9 +75,20 @@ public class Camera extends JPanel {
                     Textures.getSprites().get(Textures.getBlocks().get(1)).getImage().getWidth());
             vec = vec.add(perp.multiply(vecAngle < dirAngle ? 1 : -1));
 
+            // TODO CALCULATE X WHERE NPC SHOULD BE DRAWN
+
             if (vec.angle(dir) < hero.getFov() * 90 / Math.PI)
-                NPCsToDraw.add(i);
+                NPCsToDraw.add(new Pair<>(i, 2137));
         }
+
+        NPCsToDraw.sort(new Comparator<Pair<NPC, Integer>>() {
+            @Override
+            public int compare(Pair<NPC, Integer> o1, Pair<NPC, Integer> o2) {
+                return o1.getValue() < o2.getValue() ? -1 : 1;
+            }
+        });
+
+        return NPCsToDraw;
     }
 
     private void render(Graphics g) {       // TODO DRAW NPCS HERE

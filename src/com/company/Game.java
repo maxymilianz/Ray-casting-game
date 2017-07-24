@@ -1,10 +1,12 @@
 package com.company;
 
 import javafx.geometry.Point2D;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -22,6 +24,7 @@ public class Game extends JFrame {
 
     private LinkedList<int[][]> maps = new LinkedList<>();
     private LinkedList<NPC> NPCs = new LinkedList<>();
+    private Hashtable<Integer, Pair<Double, Double>> wallHeight = new Hashtable<>();        // height and starting y (from top)
 
     public Game() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -32,6 +35,7 @@ public class Game extends JFrame {
 
         Textures.init();
         initMaps();
+        initWallHeight();
 
         newGame();
 
@@ -104,6 +108,14 @@ public class Game extends JFrame {
             NPCs.add(new NPC(0.03, 0.06, 10, 10, 10, 10, new Point2D(x + 0.5, y + 0.5), new Point2D(0, 1),
                     new LinkedList<>(), NPC.Attitude.EVIL, NPC.NPCs.BALDRIC));
         }
+    }
+
+    private void initWallHeight() {
+        for (int i = 1; i < 5; i++)
+            wallHeight.put(i, new Pair<>(1d, 0d));
+
+        wallHeight.put(5, new Pair<>(.3, .7));
+        wallHeight.put(6, new Pair<>(.6, .4));
     }
 
     private void initMaps() {
