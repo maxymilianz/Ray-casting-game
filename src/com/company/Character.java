@@ -67,27 +67,40 @@ public class Character {
         Point2D safePos = pos.add(new Point2D(dir.getX() < 0 ? -minDistToBlock : minDistToBlock, dir.getY() < 0 ? -minDistToBlock : minDistToBlock));
 
         if (block(dir, safePos) != 0) {
-            Pair<Point2D, Boolean> collisionInfo = collisionInfo(dir);
+            Pair<Point2D, Boolean> collisionInfo = collisionInfo(dir).getLast();
             pos = collisionInfo.getValue() ? new Point2D(Math.floor(pos.getX()) + (dir.getX() < 0 ? minDistToBlock : 1 - minDistToBlock), pos.getY()) :
                     new Point2D(pos.getX(), Math.floor(pos.getY()) + (dir.getY() < 0 ? minDistToBlock : 1 - minDistToBlock));
         }
     }
 
-    Pair<Point2D, Boolean> collisionInfo(Point2D vec) {
+    LinkedList<Pair<Point2D, Boolean>> collisionInfo(Point2D vec) {
+        boolean found = true;       // better to init this with fake value than check if closer == null in inner while
+        LinkedList<Pair<Point2D, Boolean>> list = new LinkedList<>();
         double tg = vec.getY() / vec.getX(), diffY = Math.abs(tg) * Math.signum(vec.getY()), diffX = 1 / Math.abs(tg) * Math.signum(vec.getX()),
-                x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY());
+                x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY()), lastHeight = 0;
         Point2D closer = null, px = new Point2D(x, (x - pos.getX()) * tg + pos.getY()), py = new Point2D((y - pos.getY()) / tg + pos.getX(), y);
 
-        while (closer == null || block(vec, closer) == 0) {
-            if (closer == px)
-                px = px.add(vec.getX() < 0 ? -1 : 1, diffY);
-            else if (closer == py)
-                py = py.add(diffX, vec.getY() < 0 ? -1 : 1);
+        while (lastHeight != 1) {
+            while (found || block(vec, closer) == 0) {
+                if (closer == px)
+                    px = px.add(vec.getX() < 0 ? -1 : 1, diffY);
+                else if (closer == py)
+                    py = py.add(diffX, vec.getY() < 0 ? -1 : 1);
 
-            closer = distSquared(pos, px) < distSquared(pos, py) ? px : py;
+                found = false;
+                closer = distSquared(pos, px) < distSquared(pos, py) ? px : py;
+            }
+
+            double newHeight = Game.getWallHeight().get(block(vec, closer)).getKey();
+
+            if (newHeight >= lastHeight) {
+                list.addFirst(new Pair<>(closer, closer == px));
+                lastHeight = newHeight;
+                found = true;
+            }
         }
 
-        return new Pair<>(closer, closer == px);
+        return list;
     }
 
     private static double distSquared(Point2D p0, Point2D p1) {

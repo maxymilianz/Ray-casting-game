@@ -51,11 +51,13 @@ public class Textures {
     }
 
     private static void initCeilings() {
-        ceilings.put(0, Sprite.Sprites.CEILING0);
+        for (int i = 0; i < 7; i++)
+            ceilings.put(i, Sprite.Sprites.CEILING0);
     }
 
     private static void initFloors() {
-        floors.put(0, Sprite.Sprites.FLOOR0);
+        for (int i = 0; i < 7; i++)
+            floors.put(i, Sprite.Sprites.FLOOR0);
     }
 
     private static void initBlocks() {

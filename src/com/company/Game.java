@@ -24,7 +24,7 @@ public class Game extends JFrame {
 
     private LinkedList<int[][]> maps = new LinkedList<>();
     private LinkedList<NPC> NPCs = new LinkedList<>();
-    private Hashtable<Integer, Pair<Double, Double>> wallHeight = new Hashtable<>();        // height and starting y (from top)
+    private static Hashtable<Integer, Pair<Double, Double>> wallHeight = new Hashtable<>();        // height and starting y (from top)
 
     public Game() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -111,6 +111,8 @@ public class Game extends JFrame {
     }
 
     private void initWallHeight() {
+        wallHeight.put(0, new Pair<>(0d, 0d));
+
         for (int i = 1; i < 5; i++)
             wallHeight.put(i, new Pair<>(1d, 0d));
 
@@ -122,7 +124,7 @@ public class Game extends JFrame {
         maps.add(new int[][]{{1,1,1,1,1,1,1,1,2,2,2,2,2,2,2},
                             {1,0,0,0,0,0,0,0,2,0,0,0,0,0,2},
                             {1,0,3,3,3,3,3,0,0,0,0,0,0,0,2},
-                            {1,0,3,0,0,0,3,0,2,0,0,0,0,0,2},
+                            {1,0,3,5,0,6,3,0,2,0,0,0,0,0,2},
                             {1,0,3,0,0,0,3,0,2,2,2,0,2,2,2},
                             {1,0,3,0,0,0,3,0,2,0,0,0,0,0,2},
                             {1,0,3,3,0,3,3,0,2,0,0,0,0,0,2},
@@ -134,5 +136,9 @@ public class Game extends JFrame {
                             {1,0,0,0,0,0,1,4,0,3,3,3,3,0,4},
                             {1,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
                             {1,1,1,1,1,1,1,4,4,4,4,4,4,4,4}});
+    }
+
+    public static Hashtable<Integer, Pair<Double, Double>> getWallHeight() {
+        return wallHeight;
     }
 }
