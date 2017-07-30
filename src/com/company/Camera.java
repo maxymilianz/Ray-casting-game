@@ -99,9 +99,9 @@ public class Camera extends JPanel {
                 deltaPlane = plane.multiply((double) 2 / resX), pos = hero.getPos();
 
         for (int i = 0; i < resX; i++, vec = vec.subtract(deltaPlane)) {        // TODO DRAW DIFFERENT HEIGHT BLOCKS
-            Iterator<Pair<Point2D, Boolean>> iterator = hero.collisionInfo(vec).iterator();     // TODO CHECK ALSO WHERE BLOCKS ENDS NOT ONLY WHERE START (TO DRAW IT LIKE FLOOR OK)
+            Iterator<Pair<Pair<Point2D, Boolean>, Point2D>> iterator = hero.collisionInfo(vec).iterator();
 
-            Pair<Point2D, Boolean> collisionInfo = hero.collisionInfo(vec).getFirst();
+            Pair<Point2D, Boolean> collisionInfo = hero.collisionInfo(vec).getFirst().getKey();
             Point2D collisionPoint = collisionInfo.getKey();
 
             int j = 0, h = (int) (wallHeight * fovRatio * vec.magnitude() / pos.distance(collisionPoint)), emptyH = wallCenterZ - h / 2;
