@@ -67,7 +67,7 @@ public class Character {
         Point2D safePos = pos.add(new Point2D(dir.getX() < 0 ? -minDistToBlock : minDistToBlock, dir.getY() < 0 ? -minDistToBlock : minDistToBlock));
 
         if (block(dir, safePos) != 0) {
-            Pair<Point2D, Boolean> collisionInfo = collisionInfo(dir).getLast();
+            Pair<Point2D, Boolean> collisionInfo = collisionInfo(dir).getFirst();
             pos = collisionInfo.getValue() ? new Point2D(Math.floor(pos.getX()) + (dir.getX() < 0 ? minDistToBlock : 1 - minDistToBlock), pos.getY()) :
                     new Point2D(pos.getX(), Math.floor(pos.getY()) + (dir.getY() < 0 ? minDistToBlock : 1 - minDistToBlock));
         }
@@ -94,13 +94,20 @@ public class Character {
             double newHeight = Game.getWallHeight().get(block(vec, closer)).getKey();
 
             if (newHeight >= lastHeight) {
-                list.addFirst(new Pair<>(closer, closer == px));
+                list.add(new Pair<>(closer, closer == px));
                 lastHeight = newHeight;
                 found = true;
             }
         }
 
         return list;
+    }
+
+    static Point2D nextIntersection(Point2D pos, Point2D vec) {
+        double tg = vec.getY() / vec.getX(), x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY());
+        Point2D px = new Point2D(x, (x - pos.getX()) * tg + pos.getY()), py = new Point2D((y - pos.getY()) / tg + pos.getX(), y);
+
+        return distSquared(pos, px) < distSquared(pos, py) ? px : py;
     }
 
     private static double distSquared(Point2D p0, Point2D p1) {

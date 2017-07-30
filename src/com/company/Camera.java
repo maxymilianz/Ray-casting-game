@@ -9,6 +9,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -97,46 +98,47 @@ public class Camera extends JPanel {
         Point2D dir = hero.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(hero.getFov() / 2) * dir.magnitude()), vec = dir.add(plane),
                 deltaPlane = plane.multiply((double) 2 / resX), pos = hero.getPos();
 
-        for (int i = 0; i < resX; i++, vec = vec.subtract(deltaPlane)) {
-            for (Pair<Point2D, Boolean> collisionInfo : hero.collisionInfo(vec)) {      // TODO DRAW PROPER HEIGHT BLOCKS
-                Point2D collisionPoint = collisionInfo.getKey();
+        for (int i = 0; i < resX; i++, vec = vec.subtract(deltaPlane)) {        // TODO DRAW DIFFERENT HEIGHT BLOCKS
+            Iterator<Pair<Point2D, Boolean>> iterator = hero.collisionInfo(vec).iterator();     // TODO CHECK ALSO WHERE BLOCKS ENDS NOT ONLY WHERE START (TO DRAW IT LIKE FLOOR OK)
 
-                int j = 0, h = (int) (wallHeight * fovRatio * vec.magnitude() / pos.distance(collisionPoint)), emptyH = wallCenterZ - h / 2;
+            Pair<Point2D, Boolean> collisionInfo = hero.collisionInfo(vec).getFirst();
+            Point2D collisionPoint = collisionInfo.getKey();
 
-                BufferedImage img = Textures.getSprites().get(Textures.getBlocks().get(hero.block(vec, collisionPoint))).getImage();
-                int x = (int) (((collisionInfo.getValue() ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth());
+            int j = 0, h = (int) (wallHeight * fovRatio * vec.magnitude() / pos.distance(collisionPoint)), emptyH = wallCenterZ - h / 2;
 
-                float fogRatio = (float) pos.distance(collisionPoint);
-                fogRatio /= fogRatio < visibility ? visibility : 1;
+            BufferedImage img = Textures.getSprites().get(Textures.getBlocks().get(hero.block(vec, collisionPoint))).getImage();
+            int x = (int) (((collisionInfo.getValue() ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth());
 
-                for (; j < emptyH; j++) {
-                    double d = halfResY * vec.magnitude() / (wallCenterZ - j) * fovRatio;
-                    Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
-                    int tile = map[(int) p.getY()][(int) p.getX()];
+            float fogRatio = (float) pos.distance(collisionPoint);
+            fogRatio /= fogRatio < visibility ? visibility : 1;
 
-                    if (d < visibility) {
-                        BufferedImage ceiling = Textures.getSprites().get(Textures.getCeilings().getOrDefault(tile, Sprite.Sprites.CEILING0)).getImage();
-                        rendered.setRGB(i, j, mix(ceiling.getRGB((int) ((p.getX() % ceilingSize) / ceilingSize * ceiling.getWidth()),
-                                (int) ((p.getY() % ceilingSize) / ceilingSize * ceiling.getHeight())), fogRGB, (float) d / visibility));
-                    }
-                    else
-                        rendered.setRGB(i, j, fogRGB);
+            for (; j < emptyH; j++) {
+                double d = halfResY * vec.magnitude() / (wallCenterZ - j) * fovRatio;
+                Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
+                int tile = map[(int) p.getY()][(int) p.getX()];
+
+                if (d < visibility) {
+                    BufferedImage ceiling = Textures.getSprites().get(Textures.getCeilings().getOrDefault(tile, Sprite.Sprites.CEILING0)).getImage();
+                    rendered.setRGB(i, j, mix(ceiling.getRGB((int) ((p.getX() % ceilingSize) / ceilingSize * ceiling.getWidth()),
+                            (int) ((p.getY() % ceilingSize) / ceilingSize * ceiling.getHeight())), fogRGB, (float) d / visibility));
                 }
-                for (; j < resY && j < emptyH + h; j++)
-                    rendered.setRGB(i, j, fogRatio < 1 ? mix(img.getRGB(x, (j - emptyH) * img.getHeight() / h), fogRGB, fogRatio) : fogRGB);
-                for (; j < resY; j++) {
-                    double d = halfResY * vec.magnitude() / (j - wallCenterZ) * fovRatio;
-                    Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
-                    int tile = map[(int) p.getY()][(int) p.getX()];
+                else
+                    rendered.setRGB(i, j, fogRGB);
+            }
+            for (; j < resY && j < emptyH + h; j++)
+                rendered.setRGB(i, j, fogRatio < 1 ? mix(img.getRGB(x, (j - emptyH) * img.getHeight() / h), fogRGB, fogRatio) : fogRGB);
+            for (; j < resY; j++) {
+                double d = halfResY * vec.magnitude() / (j - wallCenterZ) * fovRatio;
+                Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
+                int tile = map[(int) p.getY()][(int) p.getX()];
 
-                    if (d < visibility) {
-                        BufferedImage floor = Textures.getSprites().get(Textures.getFloors().getOrDefault(tile, Sprite.Sprites.FLOOR0)).getImage();
-                        rendered.setRGB(i, j, mix(floor.getRGB((int) ((p.getX() % floorSize) / floorSize * floor.getWidth()),
-                                (int) ((p.getY() % floorSize) / floorSize * floor.getHeight())), fogRGB, (float) d / visibility));
-                    }
-                    else
-                        rendered.setRGB(i, j, fogRGB);
+                if (d < visibility) {
+                    BufferedImage floor = Textures.getSprites().get(Textures.getFloors().getOrDefault(tile, Sprite.Sprites.FLOOR0)).getImage();
+                    rendered.setRGB(i, j, mix(floor.getRGB((int) ((p.getX() % floorSize) / floorSize * floor.getWidth()),
+                            (int) ((p.getY() % floorSize) / floorSize * floor.getHeight())), fogRGB, (float) d / visibility));
                 }
+                else
+                    rendered.setRGB(i, j, fogRGB);
             }
         }
 
