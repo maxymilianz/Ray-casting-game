@@ -102,7 +102,7 @@ public class Character {
 
             double dist = pxSide ? distSquaredX * distSquaredX : distSquaredY * distSquaredY, nextDist = pos.distance(next);
 
-            if (dist / (.5 - lastStartingY) > nextDist / (.5 - startingY) || dist / (lastStartingY + lastHeight - .5) > nextDist / (startingY + newHeight - .5)) {
+            if (dist / (.5 - lastStartingY) > nextDist / (.5 - startingY) || dist / (lastStartingY + lastHeight - .5) > nextDist / (startingY + newHeight - .5)) {      // TODO
                 list.add(new Pair<>(new Pair<>(closer, pxSide), next));
                 lastHeight = newHeight;
                 lastStartingY = startingY;
