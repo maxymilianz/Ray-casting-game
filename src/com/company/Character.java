@@ -77,7 +77,8 @@ public class Character {
         boolean found = true;       // better to init this with fake value than check if closer == null in inner while
         LinkedList<Pair<Pair<Point2D, Boolean>, Point2D>> list = new LinkedList<>();
         double tg = vec.getY() / vec.getX(), diffY = Math.abs(tg) * Math.signum(vec.getY()), diffX = 1 / Math.abs(tg) * Math.signum(vec.getX()),
-                x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY()), lastHeight = 0;
+                x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY()),
+                lastHeight = 0, lastStartingY = 0, distSquaredX = 0, distSquaredY = 0;     // same as with bool found
         Point2D closer = null, px = new Point2D(x, (x - pos.getX()) * tg + pos.getY()), py = new Point2D((y - pos.getY()) / tg + pos.getX(), y),
                 dPx = new Point2D(vec.getX() < 0 ? -1 : 1, diffY), dPy = new Point2D(diffX, vec.getY() < 0 ? -1 : 1);
 
@@ -89,16 +90,22 @@ public class Character {
                     py = py.add(dPy);
 
                 found = false;
-                closer = distSquared(pos, px) < distSquared(pos, py) ? px : py;
+                distSquaredX = distSquared(pos, px);
+                distSquaredY = distSquared(pos, py);
+                closer = distSquaredX < distSquaredY ? px : py;
             }
 
             boolean pxSide = closer == px;
-            double newHeight = Game.getWallHeight().get(block(vec, closer)).getKey();
+            Pair<Double, Double> wallHeight = Game.getWallHeight().get(block(vec, closer));
+            double newHeight = wallHeight.getKey(), startingY = wallHeight.getValue();
             Point2D px1 = pxSide ? px.add(dPx) : px, py1 = !pxSide ? py.add(dPy) : py, next = distSquared(pos, px1) < distSquared(pos, py1) ? px1 : py1;
 
-            if (newHeight >= lastHeight) {      // TODO THIS MAY BE CHECKED MORE ACCURATELY
+            double dist = pxSide ? distSquaredX * distSquaredX : distSquaredY * distSquaredY, nextDist = pos.distance(next);
+
+            if (dist / (.5 - lastStartingY) > nextDist / (.5 - startingY) || dist / (lastStartingY + lastHeight - .5) > nextDist / (startingY + newHeight - .5)) {
                 list.add(new Pair<>(new Pair<>(closer, pxSide), next));
                 lastHeight = newHeight;
+                lastStartingY = startingY;
                 found = true;
             }
         }
