@@ -39,7 +39,7 @@ public class Game extends JFrame {
         initWallHeight();
 
 //        newGame();
-        getContentPane().add(new Menu(resX, resY));
+        getContentPane().add(new Menu(resX, resY, this));
 
         pack();
         setLocationRelativeTo(null);
@@ -48,7 +48,15 @@ public class Game extends JFrame {
         run();
     }
 
-    private void newGame() {
+    void pause() {
+
+    }
+
+    void resume() {
+
+    }
+
+    void newGame() {
         int[][] map = maps.get(level);
         Character.setMap(map);
         Weapon.initWeapons();

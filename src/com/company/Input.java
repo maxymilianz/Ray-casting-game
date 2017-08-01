@@ -13,17 +13,17 @@ import java.util.Hashtable;
 public class Input implements MouseListener, KeyListener {
     private double sensitivity = 0.003;
 
-    Component component;
     Point mousePos;
     Robot robot;
 
+    Game game;
     Hero hero;
 
     Hashtable<Integer, Boolean> mouseKeys = new Hashtable<>();
     Hashtable<Integer, Boolean> keys = new Hashtable<>();
 
-    public Input(Component component, Hero hero) {
-        this.component = component;
+    public Input(Game game, Hero hero) {
+        this.game = game;
         this.hero = hero;
 
         initMouseKeys();
@@ -68,8 +68,8 @@ public class Input implements MouseListener, KeyListener {
     }
 
     private void correctMouse() {
-        int w = component.getWidth(), h = component.getHeight();
-        Point p = component.getLocationOnScreen(), m = new Point(mousePos);
+        int w = game.getWidth(), h = game.getHeight();
+        Point p = game.getLocationOnScreen(), m = new Point(mousePos);
 
         m.x += m.x < p.x ? w : m.x >= p.x + w ? -w : 0;
         m.y += m.y < p.y ? h : m.y >= p.y + h ? -h : 0;
