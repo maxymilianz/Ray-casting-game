@@ -14,6 +14,10 @@ import java.util.Random;
  * Created by Lenovo on 10.07.2017.
  */
 public class Game extends JFrame {
+    enum State {
+        MENU, GAME, PAUSE
+    }
+
     private int resX = 1280, resY = 600, fps = 60, msPerFrame = 1000 / fps;
     private int nrAccuracy = 1;
     private int level = 0, difficulty = 5;
@@ -21,6 +25,8 @@ public class Game extends JFrame {
     private Camera camera;
     private Hero hero;
     private Input input;
+    private Menu menu;
+    private State state = State.MENU;
 
     private LinkedList<int[][]> maps = new LinkedList<>();
     private LinkedList<NPC> NPCs = new LinkedList<>();
@@ -39,7 +45,8 @@ public class Game extends JFrame {
         initWallHeight();
 
 //        newGame();
-        getContentPane().add(new Menu(resX, resY, this));
+        menu = new Menu(resX, resY, this);
+        getContentPane().add(menu);
 
         pack();
         setLocationRelativeTo(null);
@@ -81,9 +88,14 @@ public class Game extends JFrame {
         while (true) {
             long time = System.currentTimeMillis();
 
-            input.update();
-            hero.update();
-            Sprite.updateAll();
+            if (state == State.MENU)
+                menu.update();
+            else {
+                input.update();
+                hero.update();
+            }
+
+            Sprite.update();
             repaint();
 
             try {

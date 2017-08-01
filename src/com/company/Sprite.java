@@ -25,33 +25,19 @@ public class Sprite {
         FRONT, BACK, LEFT, RIGHT
     }
 
-    private int i = 0, time = 0;
+    private static int time = 0;
 
     private BufferedImage[] images;
-
-    public Sprite() {
-        images = new BufferedImage[]{null};
-    }
 
     public Sprite(BufferedImage[] images) {
         this.images = images;
     }
 
-    static void updateAll() {
-        for (Sprites s : Sprites.values())
-            Textures.getSprites().getOrDefault(s, new Sprite()).update();
-    }
-
-    private void update() {
+    static void update() {
         time++;
-        if (time % 10 == 0) {
-            i++;
-            if (i == images.length)
-                i = 0;
-        }
     }
 
     BufferedImage getImage() {
-        return images[i];
+        return images[(time / 10) % images.length];
     }
 }
