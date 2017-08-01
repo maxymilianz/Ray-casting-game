@@ -30,6 +30,7 @@ public class Game extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Ray-casting game");
         setFocusable(true);
+        setResizable(false);
 
         getContentPane().setPreferredSize(new Dimension(resX, resY));
 
