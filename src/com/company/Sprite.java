@@ -15,7 +15,9 @@ public class Sprite {
         M_STANDING, M_FALLING, M_FALLED, M_CASTING, M_WALKING,       // mage
         KNIGHT, ORC,
         FLOOR0,
-        CEILING0
+        CEILING0,
+        H0, H1, H2, H3, H4, H5, H6, H7, H8,     // health
+        M0, M1, M2, M3, M4, M5, M6, M7, M8      // mana
     }
 
     enum View {

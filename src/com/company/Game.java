@@ -51,7 +51,8 @@ public class Game extends JFrame {
         Character.setMap(map);
         Weapon.initWeapons();
 
-        hero = new Hero(0.03, 0.06, 100, 100, 100, 100, new Point2D(4.5, 4.5), new Point2D(0, 1), new LinkedList<>());
+        hero = new Hero(0.03, 0.06, 100, 100, 100, 100, 100, 100, new Point2D(4.5, 4.5), new Point2D(0, 1),
+                new LinkedList<>());
 
         input = new Input(this, hero);
         addMouseListener(input);
@@ -105,7 +106,7 @@ public class Game extends JFrame {
                 }
             }
 
-            NPCs.add(new NPC(0.03, 0.06, 10, 10, 10, 10, new Point2D(x + 0.5, y + 0.5), new Point2D(0, 1),
+            NPCs.add(new NPC(0.03, 0.06, 10, 10, 10, 10, 10, 10, new Point2D(x + 0.5, y + 0.5), new Point2D(0, 1),
                     new LinkedList<>(), NPC.Attitude.EVIL, NPC.NPCs.BALDRIC));
         }
     }

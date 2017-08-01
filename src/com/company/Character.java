@@ -11,7 +11,7 @@ import java.util.LinkedList;
 public class Character {
     double weaponAngle = 0, deltaWeaponAngle, attackingWeaponAngle = -Math.PI / 2;
     double speed, sprintSpeed, minDistToBlock = 0.1;
-    int health, mana, stamina, maxStamina;
+    int health, mana, stamina, maxHealth, maxMana, maxStamina;
 
     Point2D pos, dir;
 
@@ -21,12 +21,14 @@ public class Character {
 
     LinkedList<Weapon.Weapons> weapons = new LinkedList<>();
 
-    public Character(double speed, double sprintSpeed, int health, int mana, int stamina, int maxStamina, Point2D pos, Point2D dir, LinkedList<Weapon.Weapons> weapons) {
+    public Character(double speed, double sprintSpeed, int health, int mana, int stamina, int maxHealth, int maxMana, int maxStamina, Point2D pos, Point2D dir, LinkedList<Weapon.Weapons> weapons) {
         this.speed = speed;
         this.sprintSpeed = sprintSpeed;
         this.health = health;
         this.mana = mana;
         this.stamina = stamina;
+        this.maxHealth = maxHealth;
+        this.maxMana = maxMana;
         this.maxStamina = maxStamina;
         this.pos = pos;
         this.dir = dir;
@@ -78,7 +80,7 @@ public class Character {
         LinkedList<Pair<Pair<Point2D, Boolean>, Point2D>> list = new LinkedList<>();
         double tg = vec.getY() / vec.getX(), diffY = Math.abs(tg) * Math.signum(vec.getY()), diffX = 1 / Math.abs(tg) * Math.signum(vec.getX()),
                 x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY()),
-                lastHeight = 0, lastStartingY = 0, distSquaredX = 0, distSquaredY = 0;     // same as with bool found
+                lastHeight = 0, distSquaredX = 0, distSquaredY = 0;     // same as with bool found
         Point2D closer = null, px = new Point2D(x, (x - pos.getX()) * tg + pos.getY()), py = new Point2D((y - pos.getY()) / tg + pos.getX(), y),
                 dPx = new Point2D(vec.getX() < 0 ? -1 : 1, diffY), dPy = new Point2D(diffX, vec.getY() < 0 ? -1 : 1);
 
@@ -96,16 +98,13 @@ public class Character {
             }
 
             boolean pxSide = closer == px;
-            Pair<Double, Double> wallHeight = Game.getWallHeight().get(block(vec, closer));
-            double newHeight = wallHeight.getKey(), startingY = wallHeight.getValue();
             Point2D px1 = pxSide ? px.add(dPx) : px, py1 = !pxSide ? py.add(dPy) : py, next = distSquared(pos, px1) < distSquared(pos, py1) ? px1 : py1;
+            Pair<Double, Double> wallHeight = Game.getWallHeight().get(block(vec, closer));
+            double height = wallHeight.getKey();
 
-            double dist = pxSide ? distSquaredX * distSquaredX : distSquaredY * distSquaredY, nextDist = pos.distance(next);
-
-            if (dist / (.5 - lastStartingY) > nextDist / (.5 - startingY) || dist / (lastStartingY + lastHeight - .5) > nextDist / (startingY + newHeight - .5)) {      // TODO
+            if (height >= lastHeight) {      // TODO
                 list.add(new Pair<>(new Pair<>(closer, pxSide), next));
-                lastHeight = newHeight;
-                lastStartingY = startingY;
+                lastHeight = height;
                 found = true;
             }
         }
@@ -154,6 +153,22 @@ public class Character {
             go(sprintSpeed, dir);
             stamina -= 2;
         }
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public int getMana() {
+        return mana;
+    }
+
+    public int getMaxMana() {
+        return maxMana;
     }
 
     private void normalizeDir() {

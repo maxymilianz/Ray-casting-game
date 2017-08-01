@@ -45,6 +45,14 @@ public class Camera extends JPanel {
         render(g);
         drawWeapon(g);
         drawViewfinder(g);
+        drawHealthAndManabar(g);
+    }
+
+    private void drawHealthAndManabar(Graphics g) {
+        BufferedImage healthbar = Textures.getSprites().get(Textures.getHealthbar().get(8 * hero.getHealth() / hero.getMaxHealth())).getImage();
+        BufferedImage manabar = Textures.getSprites().get(Textures.getManabar().get(8 * hero.getMana() / hero.getMaxMana())).getImage();
+        g.drawImage(healthbar, 11, resY - healthbar.getHeight() + 23, null);        // 11 and 23 are arbitrary
+        g.drawImage(manabar, resX - manabar.getWidth() - 11, resY - manabar.getHeight() + 23, null);
     }
 
     private void drawViewfinder(Graphics g) {
