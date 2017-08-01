@@ -37,7 +37,8 @@ public class Game extends JFrame {
         initMaps();
         initWallHeight();
 
-        newGame();
+//        newGame();
+        getContentPane().add(new Menu(resX, resY));
 
         pack();
         setLocationRelativeTo(null);

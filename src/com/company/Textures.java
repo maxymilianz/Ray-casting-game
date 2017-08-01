@@ -149,6 +149,8 @@ public class Textures {
         sprites.put(Sprite.Sprites.M6, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/manabar/6.png"))}));
         sprites.put(Sprite.Sprites.M7, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/manabar/7.png"))}));
         sprites.put(Sprite.Sprites.M8, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/manabar/8.png"))}));
+
+        sprites.put(Sprite.Sprites.MENU_BG, new Sprite(new BufferedImage[]{ImageIO.read(new File("res/bg.jpg"))}));
     }
 
     public static Hashtable<Integer, Sprite.Sprites> getHealthbar() {
