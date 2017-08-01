@@ -161,6 +161,10 @@ public class Game extends JFrame {
                             {1,1,1,1,1,1,1,4,4,4,4,4,4,4,4}});
     }
 
+    State getGameState() {
+        return state;
+    }
+
     public static Hashtable<Integer, Pair<Double, Double>> getWallHeight() {
         return wallHeight;
     }

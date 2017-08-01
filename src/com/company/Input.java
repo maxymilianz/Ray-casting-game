@@ -18,6 +18,7 @@ public class Input implements MouseListener, KeyListener {
 
     Game game;
     Hero hero;
+    Game.State state;
 
     Hashtable<Integer, Boolean> mouseKeys = new Hashtable<>();
     Hashtable<Integer, Boolean> keys = new Hashtable<>();
@@ -25,6 +26,7 @@ public class Input implements MouseListener, KeyListener {
     public Input(Game game, Hero hero) {
         this.game = game;
         this.hero = hero;
+        state = game.getGameState();
 
         initMouseKeys();
         initKeys();
@@ -60,6 +62,9 @@ public class Input implements MouseListener, KeyListener {
     }
 
     private void updateMouse() {
+        if (state == Game.State.PAUSE)
+            return;
+
         Point oldMousePos = mousePos;
         mousePos = MouseInfo.getPointerInfo().getLocation();
         hero.turn((oldMousePos.x - mousePos.x) * sensitivity);
@@ -81,21 +86,28 @@ public class Input implements MouseListener, KeyListener {
     }
 
     private void updateKeys() {
-        if (mouseKeys.get(MouseEvent.BUTTON1))
-            hero.attack();
-        if (mouseKeys.get(MouseEvent.BUTTON3))
-            hero.aim();
+        if (state == Game.State.GAME) {
+            if (keys.get(KeyEvent.VK_ESCAPE))
+                game.pause();
 
-        if (keys.get(KeyEvent.VK_W))
-            hero.forward();
-        if (keys.get(KeyEvent.VK_S))
-            hero.backward();
-        if (keys.get(KeyEvent.VK_A))
-            hero.left();
-        if (keys.get(KeyEvent.VK_D))
-            hero.right();
-        if (keys.get(KeyEvent.VK_SHIFT))
-            hero.sprint();
+            if (mouseKeys.get(MouseEvent.BUTTON1))
+                hero.attack();
+            if (mouseKeys.get(MouseEvent.BUTTON3))
+                hero.aim();
+
+            if (keys.get(KeyEvent.VK_W))
+                hero.forward();
+            if (keys.get(KeyEvent.VK_S))
+                hero.backward();
+            if (keys.get(KeyEvent.VK_A))
+                hero.left();
+            if (keys.get(KeyEvent.VK_D))
+                hero.right();
+            if (keys.get(KeyEvent.VK_SHIFT))
+                hero.sprint();
+        }
+        else if (keys.get(KeyEvent.VK_ESCAPE))
+            game.resume();
     }
 
     public void mouseEntered(MouseEvent e) {
