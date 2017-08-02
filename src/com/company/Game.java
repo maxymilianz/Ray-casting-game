@@ -3,9 +3,12 @@ package com.company;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Random;
@@ -22,6 +25,8 @@ public class Game extends JFrame {
     private int nrAccuracy = 1;
     private int level, difficulty;
 
+    Cursor defaultCursor, blankCursor;      // TODO TRY DIFFERENT CURSOR SIZE
+
     private Camera camera;
     private Hero hero;
     private Input input;
@@ -34,7 +39,7 @@ public class Game extends JFrame {
 
     public Game() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Ray-casting game");
+        setTitle("Dungeon Raider");
         setFocusable(true);
         setResizable(false);
 
@@ -43,6 +48,8 @@ public class Game extends JFrame {
         Textures.init();
         initMaps();
         initWallHeight();
+        initCursors();
+        getContentPane().setCursor(defaultCursor);
 
         menu = new Menu(resX, resY, this);
         getContentPane().add(menu);
@@ -55,17 +62,24 @@ public class Game extends JFrame {
     }
 
     void pause() {
-
+        state = State.PAUSE;
+        getContentPane().setCursor(defaultCursor);
+        getContentPane().remove(camera);
+        menu.pause();
+        getContentPane().add(menu);
+        getContentPane().validate();
     }
 
     void resume() {
-
+        state = State.GAME;
+        input.resume();
+        getContentPane().setCursor(blankCursor);
+        getContentPane().remove(menu);
+        getContentPane().add(camera);
+        getContentPane().validate();
     }
 
     void newGame() {
-        state = State.GAME;
-        getContentPane().remove(menu);
-
         int[][] map = maps.get(level);
         Character.setMap(map);
         Weapon.initWeapons();
@@ -78,13 +92,10 @@ public class Game extends JFrame {
         addKeyListener(input);
 
         camera = new Camera(resX, resY, hero, map, NPCs);
-        getContentPane().add(camera);
-        getContentPane().validate();
 
         initNPCs();
 
-        getContentPane().setCursor(Toolkit.getDefaultToolkit().
-                createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank"));
+        resume();
     }
 
     void newGame(int level, int difficulty) {
@@ -97,7 +108,7 @@ public class Game extends JFrame {
         while (true) {
             long time = System.currentTimeMillis();
 
-            if (state == State.MENU)
+            if (state != State.GAME)
                 menu.update();
             else {
                 input.update();
@@ -116,6 +127,17 @@ public class Game extends JFrame {
 
     void exit() {
         System.exit(0);
+    }
+
+    private void initCursors() {
+        try {
+            defaultCursor = Toolkit.getDefaultToolkit().createCustomCursor(ImageIO.read(new File("res/cursors/0.png")), new Point(0, 0), "blank");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        blankCursor = Toolkit.getDefaultToolkit(). createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank");
     }
 
     private void initNPCs() {

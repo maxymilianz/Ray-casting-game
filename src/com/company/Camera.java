@@ -164,4 +164,12 @@ public class Camera extends JPanel {
 
         return a << 24 | r << 16 | g << 8 | b;
     }
+
+    void pause() {
+
+    }
+
+    void resume() {
+
+    }
 }

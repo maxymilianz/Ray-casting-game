@@ -11,6 +11,7 @@ import java.util.Hashtable;
  * Created by Lenovo on 11.07.2017.
  */
 public class Input implements MouseListener, KeyListener {
+    private long time = System.currentTimeMillis();
     private double sensitivity = 0.003;
 
     Point mousePos;
@@ -18,7 +19,7 @@ public class Input implements MouseListener, KeyListener {
 
     Game game;
     Hero hero;
-    Game.State state;
+    Game.State state = Game.State.GAME;
 
     Hashtable<Integer, Boolean> mouseKeys = new Hashtable<>();
     Hashtable<Integer, Boolean> keys = new Hashtable<>();
@@ -26,7 +27,6 @@ public class Input implements MouseListener, KeyListener {
     public Input(Game game, Hero hero) {
         this.game = game;
         this.hero = hero;
-        state = game.getGameState();
 
         initMouseKeys();
         initKeys();
@@ -54,6 +54,10 @@ public class Input implements MouseListener, KeyListener {
         keys.put(KeyEvent.VK_A, false);
         keys.put(KeyEvent.VK_D, false);
         keys.put(KeyEvent.VK_SHIFT, false);
+    }
+
+    void resume() {
+        state = Game.State.GAME;
     }
 
     void update() {
@@ -86,28 +90,34 @@ public class Input implements MouseListener, KeyListener {
     }
 
     private void updateKeys() {
-        if (state == Game.State.GAME) {
-            if (keys.get(KeyEvent.VK_ESCAPE))
+        if (keys.get(KeyEvent.VK_ESCAPE)) {
+            long newTime = System.currentTimeMillis();
+
+            if (newTime - time >= 500) {
                 game.pause();
-
-            if (mouseKeys.get(MouseEvent.BUTTON1))
-                hero.attack();
-            if (mouseKeys.get(MouseEvent.BUTTON3))
-                hero.aim();
-
-            if (keys.get(KeyEvent.VK_W))
-                hero.forward();
-            if (keys.get(KeyEvent.VK_S))
-                hero.backward();
-            if (keys.get(KeyEvent.VK_A))
-                hero.left();
-            if (keys.get(KeyEvent.VK_D))
-                hero.right();
-            if (keys.get(KeyEvent.VK_SHIFT))
-                hero.sprint();
+                state = Game.State.PAUSE;
+                time = newTime;
+            }
         }
-        else if (keys.get(KeyEvent.VK_ESCAPE))
-            game.resume();
+
+        if (state == Game.State.PAUSE)
+            return;
+
+        if (mouseKeys.get(MouseEvent.BUTTON1))
+            hero.attack();
+        if (mouseKeys.get(MouseEvent.BUTTON3))
+            hero.aim();
+
+        if (keys.get(KeyEvent.VK_W))
+            hero.forward();
+        if (keys.get(KeyEvent.VK_S))
+            hero.backward();
+        if (keys.get(KeyEvent.VK_A))
+            hero.left();
+        if (keys.get(KeyEvent.VK_D))
+            hero.right();
+        if (keys.get(KeyEvent.VK_SHIFT))
+            hero.sprint();
     }
 
     public void mouseEntered(MouseEvent e) {

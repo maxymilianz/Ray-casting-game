@@ -56,7 +56,7 @@ public class Menu extends JPanel {
     }
 
     private enum Mode {
-        MAIN, LEVEL, DIFFICULTY, HIGHSCORES, OPTIONS, CREDITS, QUIT
+        MAIN, LEVEL, DIFFICULTY, HIGHSCORES, OPTIONS, CREDITS, QUIT, PAUSE
     }
 
     private enum Text {
@@ -66,6 +66,7 @@ public class Menu extends JPanel {
         DIFFICULTY, EASY, MEDIUM, HARD, EXTREME,
         AUTHORS, CODE, M_Z, REST, INTERNET,
         EXIT, YES, NO,
+        PAUSE, MENU, RESUME,
     }
 
     private int resX, resY;
@@ -142,6 +143,8 @@ public class Menu extends JPanel {
             game.newGame();
         else if (clicked == Text.YES)
             game.exit();
+        else if (clicked == Text.RESUME)
+            resume();
     }
 
     public void paint(Graphics g) {
@@ -173,6 +176,15 @@ public class Menu extends JPanel {
         return img;
     }
 
+    void pause() {
+        modeStack.push(Mode.PAUSE);
+    }
+
+    void resume() {
+        modeStack.pop();
+        game.resume();
+    }
+
     private void initDifficulties() {
         difficulties.put(Text.EASY, 5);
         difficulties.put(Text.MEDIUM, 10);
@@ -194,6 +206,8 @@ public class Menu extends JPanel {
         modes.put(Text.FIRST, Mode.DIFFICULTY);
 
         modes.put(Text.NO, Mode.MAIN);
+
+        modes.put(Text.MENU, Mode.MAIN);
     }
 
     private void initTexts() throws Exception {     /* in this method, I decided to repeat some code in case for it to work faster
@@ -207,6 +221,7 @@ public class Menu extends JPanel {
         list.add(new Pair<>(Mode.LEVEL, new Pair<>(Text.LEVEL, new Text[]{Text.FIRST, Text.BACK})));
         list.add(new Pair<>(Mode.DIFFICULTY, new Pair<>(Text.DIFFICULTY, new Text[]{Text.EASY, Text.MEDIUM, Text.HARD, Text.EXTREME, Text.BACK})));
         list.add(new Pair<>(Mode.QUIT, new Pair<>(Text.EXIT, new Text[]{Text.YES, Text.NO})));
+        list.add(new Pair<>(Mode.PAUSE, new Pair<>(Text.PAUSE, new Text[]{Text.MENU, Text.RESUME})));
 
         for (Pair<Mode, Pair<Text, Text[]>> p : list) {     // TODO REMOVE ARBITRARY VARS, BECAUSE THEY REPEAT (MAKE THEM CONSTS)
             g2d.setFont(font.deriveFont(100f));     // 100f is arbitrary
@@ -287,5 +302,9 @@ public class Menu extends JPanel {
         strings.put(Text.M_Z, "MAKSYMILIAN ZAWARTKO");
         strings.put(Text.REST, "REST");
         strings.put(Text.INTERNET, "FROM INTERNET");
+
+        strings.put(Text.PAUSE, "PAUSE");
+        strings.put(Text.MENU, "BACK TO MENU");
+        strings.put(Text.RESUME, "RESUME");
     }
 }
