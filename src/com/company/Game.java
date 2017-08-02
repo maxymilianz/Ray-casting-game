@@ -161,6 +161,10 @@ public class Game extends JFrame {
                             {1,1,1,1,1,1,1,4,4,4,4,4,4,4,4}});
     }
 
+    String[] getHighscores() {
+        return new String[0];
+    }
+
     State getGameState() {
         return state;
     }
