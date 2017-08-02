@@ -196,11 +196,8 @@ public class Menu extends JPanel {
         modes.put(Text.NO, Mode.MAIN);
     }
 
-    private void initCredits() {
-
-    }
-
-    private void initTexts() throws Exception {
+    private void initTexts() throws Exception {     /* in this method, I decided to repeat some code in case for it to work faster
+            (otherwise I would have to check if mode != CREDITS in for loop) */
         Graphics2D g2d = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
         Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/UnrealT.ttf"));
         LinkedList<Pair<Mode, Pair<Text, Text[]>>> list = new LinkedList<>();
@@ -211,7 +208,7 @@ public class Menu extends JPanel {
         list.add(new Pair<>(Mode.DIFFICULTY, new Pair<>(Text.DIFFICULTY, new Text[]{Text.EASY, Text.MEDIUM, Text.HARD, Text.EXTREME, Text.BACK})));
         list.add(new Pair<>(Mode.QUIT, new Pair<>(Text.EXIT, new Text[]{Text.YES, Text.NO})));
 
-        for (Pair<Mode, Pair<Text, Text[]>> p : list) {
+        for (Pair<Mode, Pair<Text, Text[]>> p : list) {     // TODO REMOVE ARBITRARY VARS, BECAUSE THEY REPEAT (MAKE THEM CONSTS)
             g2d.setFont(font.deriveFont(100f));     // 100f is arbitrary
             FontMetrics fm = g2d.getFontMetrics();
             Pair<Text, Text[]> pair = p.getValue();
@@ -237,6 +234,28 @@ public class Menu extends JPanel {
 
             texts.put(p.getKey(), temp);
         }
+
+        g2d.setFont(font.deriveFont(100f));     // 100f is arbitrary
+        FontMetrics fm = g2d.getFontMetrics();
+        LinkedList<Pair<Text, Point>> temp = new LinkedList<>();
+        BufferedImage img = stringToImage(strings.get(Text.AUTHORS), fm, Color.YELLOW);
+        images.put(Text.AUTHORS, img);
+        focusedImages.put(Text.AUTHORS, img);
+        temp.add(new Pair<>(Text.AUTHORS, new Point((resX - img.getWidth()) / 2, 40)));     // 40 is arbitrary
+
+        g2d.setFont(font.deriveFont(40f));     // 40f is arbitrary
+        fm = g2d.getFontMetrics();
+        Text[] credits = new Text[]{Text.CODE, Text.M_Z, Text.REST, Text.INTERNET, Text.BACK};
+
+        for (int i = 0; i < credits.length; i++) {
+            Text text = credits[i];
+            img = stringToImage(strings.get(text), fm, Color.WHITE);
+            images.put(text, img);
+            focusedImages.put(text, text != Text.BACK ? img : stringToImage(strings.get(Text.BACK), fm, Color.YELLOW));
+            temp.add(new Pair<>(text, new Point(i % 2 == 0 ? endingX - img.getWidth() : resX - endingX, 200 + 60 * (i / 2))));      // 200 and 60 are arbitrary
+        }
+
+        texts.put(Mode.CREDITS, temp);
     }
 
     private void initStrings() {
@@ -262,5 +281,11 @@ public class Menu extends JPanel {
         strings.put(Text.EXIT, "EXIT GAME?");
         strings.put(Text.YES, "YES");
         strings.put(Text.NO, "NO");
+
+        strings.put(Text.AUTHORS, "CREDITS");
+        strings.put(Text.CODE, "CODE");
+        strings.put(Text.M_Z, "MAKSYMILIAN ZAWARTKO");
+        strings.put(Text.REST, "REST");
+        strings.put(Text.INTERNET, "FROM INTERNET");
     }
 }
