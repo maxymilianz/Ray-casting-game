@@ -212,7 +212,7 @@ public class Menu extends JPanel {
 
             LinkedList<Pair<Text, Point>> temp = new LinkedList<>();
             Text text = pair.getKey();
-            BufferedImage img = stringToImage(strings.get(text), fm, Color.WHITE);
+            BufferedImage img = stringToImage(strings.get(text), fm, Color.YELLOW);
             images.put(text, img);
             focusedImages.put(text, img);
             temp.add(new Pair<>(text, new Point((resX - img.getWidth()) / 2, 40)));      // 40 is arbitrary
