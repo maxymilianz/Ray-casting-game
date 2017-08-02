@@ -20,7 +20,7 @@ public class Game extends JFrame {
 
     private int resX = 1280, resY = 600, fps = 60, msPerFrame = 1000 / fps;
     private int nrAccuracy = 1;
-    private int level = 0, difficulty = 5;
+    private int level, difficulty;
 
     private Camera camera;
     private Hero hero;
@@ -62,12 +62,9 @@ public class Game extends JFrame {
 
     }
 
-    void newGame(int level, int difficulty) {
+    void newGame() {
         state = State.GAME;
         getContentPane().remove(menu);
-
-        this.level = level;
-        this.difficulty = difficulty;
 
         int[][] map = maps.get(level);
         Character.setMap(map);
@@ -88,6 +85,12 @@ public class Game extends JFrame {
 
         getContentPane().setCursor(Toolkit.getDefaultToolkit().
                 createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank"));
+    }
+
+    void newGame(int level, int difficulty) {
+        this.level = level;
+        this.difficulty = difficulty;
+        newGame();
     }
 
     private void run() {

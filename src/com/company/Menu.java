@@ -62,8 +62,9 @@ public class Menu extends JPanel {
     private enum Text {
         BACK,
         TITLE, NEW_GAME, CONTINUE, HIGHSCORES, OPTIONS, CREDITS, QUIT,
-        LEVEL, FIRST,      // levels
+        LEVEL, FIRST,
         DIFFICULTY, EASY, MEDIUM, HARD, EXTREME,
+        AUTHORS, CODE, M_Z, REST, INTERNET,
         EXIT, YES, NO,
     }
 
@@ -137,6 +138,8 @@ public class Menu extends JPanel {
             modeStack.pop();
         else if (difficulties.containsKey(clicked))
             game.newGame(levels.get(last), difficulties.get(clicked));
+        else if (clicked == Text.CONTINUE)
+            game.newGame();
         else if (clicked == Text.YES)
             game.exit();
     }
@@ -191,6 +194,10 @@ public class Menu extends JPanel {
         modes.put(Text.FIRST, Mode.DIFFICULTY);
 
         modes.put(Text.NO, Mode.MAIN);
+    }
+
+    private void initCredits() {
+
     }
 
     private void initTexts() throws Exception {
