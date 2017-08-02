@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.Stack;
 
 public class Menu extends JPanel {
     private class Input implements MouseListener {
@@ -70,9 +71,12 @@ public class Menu extends JPanel {
 
     private Game game;
     private Input input = new Input();
-    private Mode mode = Mode.MAIN;
-    private Text focused = null;
+    private Text focused = null, last;
 
+    private Stack<Mode> modeStack = new Stack<>();
+
+    private Hashtable<Text, Integer> difficulties = new Hashtable<>();
+    private Hashtable<Text, Integer> levels = new Hashtable<>();
     private Hashtable<Text, BufferedImage> images = new Hashtable<>();
     private Hashtable<Text, Mode> modes = new Hashtable<>();
     private Hashtable<Text, String> strings = new Hashtable<>();
@@ -83,8 +87,12 @@ public class Menu extends JPanel {
         this.resY = resY;
         this.game = game;
 
+        modeStack.push(Mode.MAIN);
+
         initStrings();
         initModes();
+        initLevels();
+        initDifficulties();
 
         try {
             initTexts();
@@ -100,7 +108,7 @@ public class Menu extends JPanel {
         focused = null;
         Point press = input.getPress(), click = input.getClick();
 
-        for (Pair<Text, Point> p : texts.get(mode)) {
+        for (Pair<Text, Point> p : texts.get(modeStack.peek())) {
             Text t = p.getKey();
             BufferedImage img = images.get(t);
             Point point = p.getValue();
@@ -112,8 +120,9 @@ public class Menu extends JPanel {
                 if (rect.contains(click)) {
                     input.reset();
 
-                    if (modes.containsKey(t)) {     // TODO REMEMBER CHOSEN LEVEL
-                        mode = modes.get(t);
+                    if (modes.containsKey(t)) {
+                        last = t;
+                        modeStack.push(modes.get(t));
                     }
                     else
                         action(t);
@@ -123,13 +132,18 @@ public class Menu extends JPanel {
     }
 
     private void action(Text clicked) {
-
+        if (clicked == Text.BACK)
+            modeStack.pop();
+        else if (difficulties.containsKey(clicked))
+            game.newGame(levels.get(last), difficulties.get(clicked));
+        else if (clicked == Text.YES)
+            game.exit();
     }
 
     public void paint(Graphics g) {
         g.drawImage(Textures.getSprites().get(Sprite.Sprites.MENU_BG).getImage(), 0, 0, resX, resY, null);
 
-        for (Pair<Text, Point> p : texts.get(mode)) {
+        for (Pair<Text, Point> p : texts.get(modeStack.peek())) {
             Point point = p.getValue();
             g.drawImage(images.get(p.getKey()), point.x, point.y, null);
         }
@@ -154,9 +168,18 @@ public class Menu extends JPanel {
         return img;
     }
 
-    private void initModes() {
-        modes.put(Text.BACK, Mode.MAIN);
+    private void initDifficulties() {
+        difficulties.put(Text.EASY, 5);
+        difficulties.put(Text.MEDIUM, 10);
+        difficulties.put(Text.HARD, 15);
+        difficulties.put(Text.EXTREME, 20);
+    }
 
+    private void initLevels() {
+        levels.put(Text.FIRST, 0);
+    }
+
+    private void initModes() {
         modes.put(Text.NEW_GAME, Mode.LEVEL);
         modes.put(Text.HIGHSCORES, Mode.HIGHSCORES);
         modes.put(Text.OPTIONS, Mode.OPTIONS);

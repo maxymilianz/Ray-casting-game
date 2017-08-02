@@ -63,6 +63,9 @@ public class Game extends JFrame {
     }
 
     void newGame(int level, int difficulty) {
+        state = State.GAME;
+        getContentPane().remove(menu);
+
         this.level = level;
         this.difficulty = difficulty;
 
@@ -79,6 +82,7 @@ public class Game extends JFrame {
 
         camera = new Camera(resX, resY, hero, map, NPCs);
         getContentPane().add(camera);
+        getContentPane().validate();
 
         initNPCs();
 
