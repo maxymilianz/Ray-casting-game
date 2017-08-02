@@ -78,6 +78,7 @@ public class Menu extends JPanel {
     private Hashtable<Text, Integer> difficulties = new Hashtable<>();
     private Hashtable<Text, Integer> levels = new Hashtable<>();
     private Hashtable<Text, BufferedImage> images = new Hashtable<>();
+    private Hashtable<Text, BufferedImage> focusedImages = new Hashtable<>();
     private Hashtable<Text, Mode> modes = new Hashtable<>();
     private Hashtable<Text, String> strings = new Hashtable<>();
     private Hashtable<Mode, LinkedList<Pair<Text, Point>>> texts = new Hashtable<>();
@@ -144,8 +145,9 @@ public class Menu extends JPanel {
         g.drawImage(Textures.getSprites().get(Sprite.Sprites.MENU_BG).getImage(), 0, 0, resX, resY, null);
 
         for (Pair<Text, Point> p : texts.get(modeStack.peek())) {
+            Text t = p.getKey();
             Point point = p.getValue();
-            g.drawImage(images.get(p.getKey()), point.x, point.y, null);
+            g.drawImage(t == focused ? focusedImages.get(t) : images.get(t), point.x, point.y, null);
         }
     }
 
@@ -212,6 +214,7 @@ public class Menu extends JPanel {
             Text text = pair.getKey();
             BufferedImage img = stringToImage(strings.get(text), fm, Color.WHITE);
             images.put(text, img);
+            focusedImages.put(text, img);
             temp.add(new Pair<>(text, new Point((resX - img.getWidth()) / 2, 40)));      // 40 is arbitrary
 
             g2d.setFont(font.deriveFont(40f));      // 40f is arbitrary
@@ -221,6 +224,7 @@ public class Menu extends JPanel {
                 text = textArray[i];
                 img = stringToImage(strings.get(text), fm, Color.WHITE);
                 images.put(text, img);
+                focusedImages.put(text, stringToImage(strings.get(text), fm, Color.YELLOW));
                 temp.add(new Pair<>(text, new Point(endingX - img.getWidth(), 200 + 60 * i)));       // 200 and 60 are arbitrary
             }
 
