@@ -15,6 +15,11 @@ public class Menu extends JPanel {
     private class Input implements MouseListener {
         private Point click = new Point(), press = new Point();
 
+        void reset() {
+            click = new Point();
+            press = new Point();
+        }
+
         @Override
         public void mouseClicked(MouseEvent e) {
             click.setLocation(e.getX(), e.getY());
@@ -54,7 +59,11 @@ public class Menu extends JPanel {
     }
 
     private enum Text {
-        TITLE, NEW_GAME, CONTINUE, HIGHSCORES, OPTIONS, CREDITS, QUIT
+        BACK,
+        TITLE, NEW_GAME, CONTINUE, HIGHSCORES, OPTIONS, CREDITS, QUIT,
+        LEVEL, FIRST,      // levels
+        DIFFICULTY, EASY, MEDIUM, HARD, EXTREME,
+        EXIT, YES, NO,
     }
 
     private int resX, resY;
@@ -62,9 +71,12 @@ public class Menu extends JPanel {
     private Game game;
     private Input input = new Input();
     private Mode mode = Mode.MAIN;
+    private Text focused = null;
 
+    private Hashtable<Text, BufferedImage> images = new Hashtable<>();
+    private Hashtable<Text, Mode> modes = new Hashtable<>();
     private Hashtable<Text, String> strings = new Hashtable<>();
-    private Hashtable<Mode, LinkedList<Pair<BufferedImage, Point>>> texts = new Hashtable<>();
+    private Hashtable<Mode, LinkedList<Pair<Text, Point>>> texts = new Hashtable<>();
 
     public Menu(int resX, int resY, Game game) {
         this.resX = resX;
@@ -72,6 +84,7 @@ public class Menu extends JPanel {
         this.game = game;
 
         initStrings();
+        initModes();
 
         try {
             initTexts();
@@ -79,18 +92,46 @@ public class Menu extends JPanel {
         catch (Exception e) {
             e.printStackTrace();
         }
+
+        addMouseListener(input);
     }
 
     void update() {
+        focused = null;
+        Point press = input.getPress(), click = input.getClick();
+
+        for (Pair<Text, Point> p : texts.get(mode)) {
+            Text t = p.getKey();
+            BufferedImage img = images.get(t);
+            Point point = p.getValue();
+            Rectangle rect = new Rectangle(point.x, point.y, img.getWidth(), img.getHeight());
+
+            if (rect.contains(press)) {
+                focused = t;
+
+                if (rect.contains(click)) {
+                    input.reset();
+
+                    if (modes.containsKey(t)) {     // TODO REMEMBER CHOSEN LEVEL
+                        mode = modes.get(t);
+                    }
+                    else
+                        action(t);
+                }
+            }
+        }
+    }
+
+    private void action(Text clicked) {
 
     }
 
     public void paint(Graphics g) {
         g.drawImage(Textures.getSprites().get(Sprite.Sprites.MENU_BG).getImage(), 0, 0, resX, resY, null);
 
-        for (Pair<BufferedImage, Point> p : texts.get(mode)) {
+        for (Pair<Text, Point> p : texts.get(mode)) {
             Point point = p.getValue();
-            g.drawImage(p.getKey(), point.x, point.y, null);
+            g.drawImage(images.get(p.getKey()), point.x, point.y, null);
         }
     }
 
@@ -113,6 +154,20 @@ public class Menu extends JPanel {
         return img;
     }
 
+    private void initModes() {
+        modes.put(Text.BACK, Mode.MAIN);
+
+        modes.put(Text.NEW_GAME, Mode.LEVEL);
+        modes.put(Text.HIGHSCORES, Mode.HIGHSCORES);
+        modes.put(Text.OPTIONS, Mode.OPTIONS);
+        modes.put(Text.CREDITS, Mode.CREDITS);
+        modes.put(Text.QUIT, Mode.QUIT);
+
+        modes.put(Text.FIRST, Mode.DIFFICULTY);
+
+        modes.put(Text.NO, Mode.MAIN);
+    }
+
     private void initTexts() throws Exception {
         Graphics2D g2d = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
         Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/UnrealT.ttf"));
@@ -120,30 +175,39 @@ public class Menu extends JPanel {
         int endingX = resX * 890 / 1920;        // 890 and 1920 are arbitrary
 
         list.add(new Pair<>(Mode.MAIN, new Pair<>(Text.TITLE, new Text[]{Text.NEW_GAME, Text.CONTINUE, Text.HIGHSCORES, Text.OPTIONS, Text.CREDITS, Text.QUIT})));
+        list.add(new Pair<>(Mode.LEVEL, new Pair<>(Text.LEVEL, new Text[]{Text.FIRST, Text.BACK})));
+        list.add(new Pair<>(Mode.DIFFICULTY, new Pair<>(Text.DIFFICULTY, new Text[]{Text.EASY, Text.MEDIUM, Text.HARD, Text.EXTREME, Text.BACK})));
+        list.add(new Pair<>(Mode.QUIT, new Pair<>(Text.EXIT, new Text[]{Text.YES, Text.NO})));
 
         for (Pair<Mode, Pair<Text, Text[]>> p : list) {
-            g2d.setFont(font.deriveFont(100f));
+            g2d.setFont(font.deriveFont(100f));     // 100f is arbitrary
             FontMetrics fm = g2d.getFontMetrics();
             Pair<Text, Text[]> pair = p.getValue();
             Text[] textArray = pair.getValue();
 
-            LinkedList<Pair<BufferedImage, Point>> temp = new LinkedList<>();
-            BufferedImage img = stringToImage(strings.get(pair.getKey()), fm, Color.WHITE);
-            temp.add(new Pair<>(img, new Point((resX - img.getWidth()) / 2, 40)));      // 40 is arbitrary
+            LinkedList<Pair<Text, Point>> temp = new LinkedList<>();
+            Text text = pair.getKey();
+            BufferedImage img = stringToImage(strings.get(text), fm, Color.WHITE);
+            images.put(text, img);
+            temp.add(new Pair<>(text, new Point((resX - img.getWidth()) / 2, 40)));      // 40 is arbitrary
 
-            texts.put(p.getKey(), temp);
-
-            g2d.setFont(font.deriveFont(40f));
+            g2d.setFont(font.deriveFont(40f));      // 40f is arbitrary
             fm = g2d.getFontMetrics();
 
             for (int i = 0; i < textArray.length; i++) {
-                img = stringToImage(strings.get(textArray[i]), fm, Color.WHITE);
-                temp.add(new Pair<>(img, new Point(endingX - img.getWidth(), 200 + 60 * i)));       // 200 and 60 are arbitrary
+                text = textArray[i];
+                img = stringToImage(strings.get(text), fm, Color.WHITE);
+                images.put(text, img);
+                temp.add(new Pair<>(text, new Point(endingX - img.getWidth(), 200 + 60 * i)));       // 200 and 60 are arbitrary
             }
+
+            texts.put(p.getKey(), temp);
         }
     }
 
     private void initStrings() {
+        strings.put(Text.BACK, "BACK");
+
         strings.put(Text.TITLE, "DUNGEON RAIDER");
         strings.put(Text.NEW_GAME, "NEW GAME");
         strings.put(Text.CONTINUE, "CONTINUE");
@@ -151,5 +215,18 @@ public class Menu extends JPanel {
         strings.put(Text.OPTIONS, "OPTIONS");
         strings.put(Text.CREDITS, "CREDITS");
         strings.put(Text.QUIT, "QUIT");
+
+        strings.put(Text.LEVEL, "SELECT LEVEL");
+        strings.put(Text.FIRST, "1ST LEVEL");
+
+        strings.put(Text.DIFFICULTY, "SELECT DIFFICULTY");
+        strings.put(Text.EASY, "EASY");
+        strings.put(Text.MEDIUM, "MEDIUM");
+        strings.put(Text.HARD, "HARD");
+        strings.put(Text.EXTREME, "EXTREME");
+
+        strings.put(Text.EXIT, "EXIT GAME?");
+        strings.put(Text.YES, "YES");
+        strings.put(Text.NO, "NO");
     }
 }

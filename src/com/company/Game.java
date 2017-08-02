@@ -44,7 +44,6 @@ public class Game extends JFrame {
         initMaps();
         initWallHeight();
 
-//        newGame();
         menu = new Menu(resX, resY, this);
         getContentPane().add(menu);
 
@@ -63,7 +62,10 @@ public class Game extends JFrame {
 
     }
 
-    void newGame() {
+    void newGame(int level, int difficulty) {
+        this.level = level;
+        this.difficulty = difficulty;
+
         int[][] map = maps.get(level);
         Character.setMap(map);
         Weapon.initWeapons();
@@ -103,6 +105,10 @@ public class Game extends JFrame {
             }
             catch (Exception e) { }
         }
+    }
+
+    void exit() {
+        System.exit(0);
     }
 
     private void initNPCs() {
