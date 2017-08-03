@@ -16,8 +16,10 @@ import java.util.LinkedList;
  * Created by Lenovo on 10.07.2017.
  */
 public class Camera extends JPanel {
-    private final int resX, resY, wallHeight, weaponX, weaponY, floorSize = 4, ceilingSize = 4, halfResY, visibility = 8, fogRGB = Color.black.getRGB();
+    private final int wallHeight, weaponX, weaponY, floorSize = 4, ceilingSize = 4, halfResY, visibility = 8, fogRGB = Color.black.getRGB();
             // floorSize and ceilingSize are in tiles
+
+    private int resX, resY, renderResX, renderResY;
 
     private BufferedImage rendered;
 
@@ -27,18 +29,20 @@ public class Camera extends JPanel {
 
     private LinkedList<NPC> NPCs;
 
-    public Camera(int resX, int resY, Hero hero, int[][] map, LinkedList<NPC> NPCs) {
+    public Camera(int resX, int resY, int renderResX, int renderResY, Hero hero, int[][] map, LinkedList<NPC> NPCs) {
         this.resX = resX;
         this.resY = resY;
-        wallHeight = resY;
-        halfResY = resY / 2;
+        this.renderResX = renderResX;
+        this.renderResY = renderResY;
+        wallHeight = renderResY;
+        halfResY = renderResY / 2;
         weaponX = resX - 1000;
         weaponY = resY - 500;
         this.hero = hero;
         this.map = map;
         this.NPCs = NPCs;
 
-        rendered = new BufferedImage(resX, resY, BufferedImage.TYPE_INT_RGB);
+        rendered = new BufferedImage(renderResX, renderResY, BufferedImage.TYPE_INT_RGB);
     }
 
     public void paint(Graphics g) {
@@ -104,9 +108,9 @@ public class Camera extends JPanel {
         int wallCenterZ = (int) (halfResY * hero.getzDir());
         double fovRatio = hero.getDefaultFov() / hero.getFov();
         Point2D dir = hero.getDir(), plane = new Point2D(-dir.getY(), dir.getX()).multiply(Math.tan(hero.getFov() / 2) * dir.magnitude()), vec = dir.add(plane),
-                deltaPlane = plane.multiply((double) 2 / resX), pos = hero.getPos();
+                deltaPlane = plane.multiply((double) 2 / renderResX), pos = hero.getPos();
 
-        for (int i = 0; i < resX; i++, vec = vec.subtract(deltaPlane)) {        // TODO DRAW DIFFERENT HEIGHT BLOCKS
+        for (int i = 0; i < renderResX; i++, vec = vec.subtract(deltaPlane)) {        // TODO DRAW DIFFERENT HEIGHT BLOCKS
             Iterator<Pair<Pair<Point2D, Boolean>, Point2D>> iterator = hero.collisionInfo(vec).iterator();
 
             Pair<Point2D, Boolean> collisionInfo = hero.collisionInfo(vec).getFirst().getKey();
@@ -133,9 +137,9 @@ public class Camera extends JPanel {
                 else
                     rendered.setRGB(i, j, fogRGB);
             }
-            for (; j < resY && j < emptyH + h; j++)
+            for (; j < renderResY && j < emptyH + h; j++)
                 rendered.setRGB(i, j, fogRatio < 1 ? mix(img.getRGB(x, (j - emptyH) * img.getHeight() / h), fogRGB, fogRatio) : fogRGB);
-            for (; j < resY; j++) {
+            for (; j < renderResY; j++) {
                 double d = halfResY * vec.magnitude() / (j - wallCenterZ) * fovRatio;
                 Point2D p = hero.getPos().add(vec.multiply(d / vec.magnitude()));
                 int tile = map[(int) p.getY()][(int) p.getX()];
@@ -150,7 +154,7 @@ public class Camera extends JPanel {
             }
         }
 
-        g.drawImage(rendered, 0, 0, null);
+        g.drawImage(rendered, 0, 0, resX, resY, null);
     }
 
     private int mix (int c0, int c1, float ratio) {     // ratio of (c1 - all) to all
@@ -163,13 +167,5 @@ public class Camera extends JPanel {
         int b = (int) ((c0 & 0xff) * iRatio + (c1 & 0xff) * ratio);
 
         return a << 24 | r << 16 | g << 8 | b;
-    }
-
-    void pause() {
-
-    }
-
-    void resume() {
-
     }
 }

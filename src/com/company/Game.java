@@ -3,12 +3,9 @@ package com.company;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Random;
@@ -88,7 +85,7 @@ public class Game extends JFrame {
         addMouseListener(input);
         addKeyListener(input);
 
-        camera = new Camera(resX, resY, hero, map, NPCs);
+        camera = new Camera(resX, resY, resX / 2, resY / 2, hero, map, NPCs);
 
         initNPCs();
 
