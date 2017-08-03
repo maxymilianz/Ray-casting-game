@@ -69,7 +69,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         DIFFICULTY, EASY, MEDIUM, HARD, EXTREME,
         SETTINGS, GRAPHICS, AUDIO, CONTROLS, APPLY, CANCEL,
         GRAPHICS_SETTINGS, FULLSCREEN, RES, RENDER_RES,
-        NATIVE, _1080, _720, _600, _300, ON, OFF,
+        NATIVE, NATIVE_BY_2, _1080, _720, _600, _300, ON, OFF,
         AUTHORS, CODE, M_Z, REST, INTERNET,
         EXIT, YES, NO,
         PAUSE, MENU, RESUME,
@@ -188,10 +188,17 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         drawCursor(g);
     }
 
-    private void drawSettingsMenu(Graphics g) {
+    private void drawSettingsMenu(Graphics g) {     // TODO DRAW ONLY ONE FROM EACH POSSIBILITIES
         Mode mode = modeStack.peek();
 
+        for (Pair<Text, Point> p : texts.get(mode)) {
+            Text text = p.getKey();
 
+            for (Text t : possibilities.getOrDefault(text, new Text[0])) {
+                Point point = options.get(text);
+                g.drawImage(t == focused ? focusedImages.get(t) : images.get(t), point.x, point.y, null);
+            }
+        }
     }
 
     private BufferedImage stringToImage(String text, FontMetrics fm, Color c) {
@@ -223,7 +230,9 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     }
 
     private void initResolutions() {
-        resolutions.put(Text.NATIVE, Toolkit.getDefaultToolkit().getScreenSize());
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        resolutions.put(Text.NATIVE, d);
+        resolutions.put(Text.NATIVE_BY_2, new Dimension(d.width / 2, d.height / 2));
         resolutions.put(Text._1080, new Dimension(1920, 1080));
         resolutions.put(Text._720, new Dimension(1280, 720));
         resolutions.put(Text._600, new Dimension(1280, 600));
@@ -339,7 +348,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
         texts.put(Mode.CREDITS, temp);
 
-        g2d.setFont(font.deriveFont(titleFontSize));        // graphics options
+        g2d.setFont(font.deriveFont(fontSize));        // graphics options
         fm = g2d.getFontMetrics();
 
         Text[] tempArray = new Text[]{Text.ON, Text.OFF};
@@ -352,7 +361,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         options.put(Text.FULLSCREEN, new Point(resX - endingX, textY));
         possibilities.put(Text.FULLSCREEN, tempArray);
 
-        tempArray = new Text[]{Text.NATIVE, Text._1080, Text._720, Text._600, Text._300};
+        tempArray = new Text[]{Text.NATIVE, Text.NATIVE_BY_2, Text._1080, Text._720, Text._600, Text._300};
 
         for (Text t : tempArray) {
             images.put(t, stringToImage(strings.get(t), fm, Color.WHITE));
@@ -413,9 +422,14 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         strings.put(Text.RES, "RESOLUTION");
         strings.put(Text.RENDER_RES, "RENDER RESOLUTION");
         strings.put(Text.NATIVE, "NATIVE");
+        strings.put(Text.NATIVE_BY_2, "NATIVE / 2");
         strings.put(Text._1080, "1920 x 1080");
         strings.put(Text._720, "1280 x 720");
         strings.put(Text._600, "1280 x 600");
         strings.put(Text._300, "640 x 300");
+    }
+
+    public Hashtable<Text, Dimension> getResolutions() {
+        return resolutions;
     }
 }

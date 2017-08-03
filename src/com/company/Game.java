@@ -19,7 +19,7 @@ public class Game extends JFrame {
     }
 
     private boolean fullscreen = true;
-    private int resX = 1280, resY = 600, fps = 60, msPerFrame = 1000 / fps;
+    private int resX = 1280, resY = 600, fps = 60, msPerFrame = 1000 / fps;     // TODO FOR SOME REASON, resX AND resY DON'T MATTER
     private int nrAccuracy = 1;
     private int level, difficulty;
 
@@ -30,7 +30,7 @@ public class Game extends JFrame {
     private Input input;
     private Menu menu;
     private State state = State.MENU;
-    private Menu.Text resolution = Menu.Text.NATIVE;
+    private Menu.Text resolution = Menu.Text.NATIVE, renderResolution = Menu.Text.NATIVE_BY_2;
 
     private LinkedList<int[][]> maps = new LinkedList<>();
     private LinkedList<NPC> NPCs = new LinkedList<>();
