@@ -19,8 +19,7 @@ public class Game extends JFrame {
     }
 
     private boolean fullscreen = true;
-    private int resX = 1280, resY = 600, fps = 60, msPerFrame = 1000 / fps;     // TODO FOR SOME REASON, resX AND resY DON'T MATTER
-    private int nrAccuracy = 1;
+    private int resX = 1366, resY = 768, fps = 60, msPerFrame = 1000 / fps;
     private int level, difficulty;
 
     private Cursor c;
@@ -135,7 +134,7 @@ public class Game extends JFrame {
     private void initNPCs() {
         Random r = new Random();
         int[][] map = maps.get(level);
-        int nrOfEnemies = difficulty + r.nextInt(nrAccuracy) * (r.nextBoolean() ? 1 : -1);
+        int nrOfEnemies = difficulty + r.nextInt(1) * (r.nextBoolean() ? 1 : -1);       // 1 in r.nextInt(int) is arbitrary
         nrOfEnemies = nrOfEnemies < 0 ? 0 : nrOfEnemies;
 
         for (int i = 0; i < nrOfEnemies; i++) {

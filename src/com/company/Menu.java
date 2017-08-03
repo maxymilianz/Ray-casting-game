@@ -96,6 +96,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private Hashtable<Text, Mode> modes = new Hashtable<>();
     private Hashtable<Text, String> strings = new Hashtable<>();
     private Hashtable<Text, Point> options = new Hashtable<>();
+    private Hashtable<Text, Integer> chosen = new Hashtable<>();
+    private Hashtable<Text, Integer> checked = new Hashtable<>();
     private Hashtable<Text, Text[]> possibilities = new Hashtable<>();
     private Hashtable<Mode, LinkedList<Pair<Text, Point>>> texts = new Hashtable<>();
 
@@ -112,6 +114,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         initDifficulties();
         initHashSets();
         initResolutions();
+        initChosen();
 
         try {
             initTexts();
@@ -158,10 +161,28 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             game.newGame(levels.get(last), difficulties.get(clicked));
         else if (clicked == Text.CONTINUE)
             game.newGame();
+        else if (possibilities.containsKey(clicked))
+            iterate(clicked);
+        else if (clicked == Text.APPLY)
+            apply();
         else if (clicked == Text.YES)
             game.exit();
         else if (clicked == Text.RESUME)
             resume();
+    }
+
+    private void apply() {      // TODO REALLY APPLY CHANGES (THIS WAITS ALMOST UNTIL THE END OF CODING, CAUSE THIS IS CONNECTED TO SERIALIZATION AND I STILL DON'T KNOW WHAT TO SER.
+        for (Pair<Text, Point> p : texts.get(modeStack.peek())) {
+            Text t = p.getKey();
+
+            if (possibilities.containsKey(t))
+                chosen.put(t, checked.get(t));
+        }
+    }
+
+    private void iterate(Text t) {
+        int i = checked.get(t) + 1;
+        checked.put(t, i < possibilities.get(t).length ? i : 0);
     }
 
     private void drawCursor(Graphics g) {
@@ -188,16 +209,19 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         drawCursor(g);
     }
 
-    private void drawSettingsMenu(Graphics g) {     // TODO DRAW ONLY ONE FROM EACH POSSIBILITIES
+    private void drawSettingsMenu(Graphics g) {
         Mode mode = modeStack.peek();
 
         for (Pair<Text, Point> p : texts.get(mode)) {
             Text text = p.getKey();
 
-            for (Text t : possibilities.getOrDefault(text, new Text[0])) {
-                Point point = options.get(text);
-                g.drawImage(t == focused ? focusedImages.get(t) : images.get(t), point.x, point.y, null);
-            }
+            if (!possibilities.containsKey(text))
+                continue;
+
+            int checkedPos = checked.get(text);
+            Text t = possibilities.get(text)[checkedPos];
+            Point point = options.get(text);
+            g.drawImage(checkedPos == chosen.get(text) ? focusedImages.get(t) : images.get(t), point.x, point.y, null);
         }
     }
 
@@ -227,6 +251,16 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private void resume() {
         modeStack.pop();
         game.resume();
+    }
+
+    private void initChosen() {
+        chosen.put(Text.FULLSCREEN, 0);
+        chosen.put(Text.RES, 0);
+        chosen.put(Text.RENDER_RES, 1);
+
+        checked.put(Text.FULLSCREEN, 0);
+        checked.put(Text.RES, 0);
+        checked.put(Text.RENDER_RES, 1);
     }
 
     private void initResolutions() {
@@ -358,8 +392,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             focusedImages.put(t, stringToImage(strings.get(t), fm, Color.YELLOW));
         }
 
-        options.put(Text.FULLSCREEN, new Point(resX - endingX, textY));
         possibilities.put(Text.FULLSCREEN, tempArray);
+        options.put(Text.FULLSCREEN, new Point(resX - endingX, textY));
 
         tempArray = new Text[]{Text.NATIVE, Text.NATIVE_BY_2, Text._1080, Text._720, Text._600, Text._300};
 
