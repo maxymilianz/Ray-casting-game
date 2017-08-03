@@ -58,6 +58,7 @@ public class Input implements MouseListener, KeyListener {
 
     void resume() {
         state = Game.State.GAME;
+        robot.mouseMove(mousePos.x, mousePos.y);
     }
 
     void update() {
