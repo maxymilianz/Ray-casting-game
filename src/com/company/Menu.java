@@ -87,6 +87,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
     private Stack<Mode> modeStack = new Stack<>();
 
+    private Hashtable<Text, Dimension> resolutions = new Hashtable<>();
     private Hashtable<Text, Integer> difficulties = new Hashtable<>();
     private Hashtable<Text, Integer> levels = new Hashtable<>();
     private Hashtable<Text, BufferedImage> images = new Hashtable<>();
@@ -107,6 +108,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         initLevels();
         initDifficulties();
         initGoBacks();
+        initResolutions();
 
         try {
             initTexts();
@@ -177,7 +179,14 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             g.drawImage(t == focused ? focusedImages.get(t) : images.get(t), point.x, point.y, null);
         }
 
+        if (modeStack.peek() == Mode.GRAPHICS)
+            drawGraphicsMenu(g);
+
         drawCursor(g);
+    }
+
+    private void drawGraphicsMenu(Graphics g) {
+
     }
 
     private BufferedImage stringToImage(String text, FontMetrics fm, Color c) {
@@ -206,6 +215,14 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private void resume() {
         modeStack.pop();
         game.resume();
+    }
+
+    private void initResolutions() {
+        resolutions.put(Text.NATIVE, Toolkit.getDefaultToolkit().getScreenSize());
+        resolutions.put(Text._1080, new Dimension(1920, 1080));
+        resolutions.put(Text._720, new Dimension(1280, 720));
+        resolutions.put(Text._600, new Dimension(1280, 600));
+        resolutions.put(Text._300, new Dimension(640, 300));
     }
 
     private void initGoBacks() {
