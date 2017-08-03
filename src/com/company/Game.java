@@ -25,7 +25,7 @@ public class Game extends JFrame {
     private int nrAccuracy = 1;
     private int level, difficulty;
 
-    Cursor defaultCursor, blankCursor;      // TODO TRY DIFFERENT CURSOR SIZE
+    Cursor c = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank");
 
     private Camera camera;
     private Hero hero;
@@ -48,8 +48,7 @@ public class Game extends JFrame {
         Textures.init();
         initMaps();
         initWallHeight();
-        initCursors();
-        getContentPane().setCursor(defaultCursor);
+        getContentPane().setCursor(c);
 
         menu = new Menu(resX, resY, this);
         getContentPane().add(menu);
@@ -63,7 +62,6 @@ public class Game extends JFrame {
 
     void pause() {
         state = State.PAUSE;
-        getContentPane().setCursor(defaultCursor);
         getContentPane().remove(camera);
         menu.pause();
         getContentPane().add(menu);
@@ -73,7 +71,6 @@ public class Game extends JFrame {
     void resume() {
         state = State.GAME;
         input.resume();
-        getContentPane().setCursor(blankCursor);
         getContentPane().remove(menu);
         getContentPane().add(camera);
         getContentPane().validate();
@@ -84,8 +81,8 @@ public class Game extends JFrame {
         Character.setMap(map);
         Weapon.initWeapons();
 
-        hero = new Hero(0.03, 0.06, 100, 100, 100, 100, 100, 100, new Point2D(4.5, 4.5), new Point2D(0, 1),
-                new LinkedList<>());
+        hero = new Hero(0.03, 0.06, 100, 100, 100, 100, 100, 100, new Point2D(4.5, 4.5),
+                new Point2D(0, 1), new LinkedList<>());
 
         input = new Input(this, hero);
         addMouseListener(input);
@@ -129,17 +126,6 @@ public class Game extends JFrame {
         System.exit(0);
     }
 
-    private void initCursors() {
-        try {
-            defaultCursor = Toolkit.getDefaultToolkit().createCustomCursor(ImageIO.read(new File("res/cursors/0.png")), new Point(0, 0), "blank");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        blankCursor = Toolkit.getDefaultToolkit(). createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank");
-    }
-
     private void initNPCs() {
         Random r = new Random();
         int[][] map = maps.get(level);
@@ -163,8 +149,8 @@ public class Game extends JFrame {
                 }
             }
 
-            NPCs.add(new NPC(0.03, 0.06, 10, 10, 10, 10, 10, 10, new Point2D(x + 0.5, y + 0.5), new Point2D(0, 1),
-                    new LinkedList<>(), NPC.Attitude.EVIL, NPC.NPCs.BALDRIC));
+            NPCs.add(new NPC(0.03, 0.06, 10, 10, 10, 10, 10, 10, new Point2D(x + 0.5, y + 0.5),
+                    new Point2D(0, 1), new LinkedList<>(), NPC.Attitude.EVIL, NPC.NPCs.BALDRIC));
         }
     }
 

@@ -2,17 +2,19 @@ package com.company;
 
 import javafx.util.Pair;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Stack;
 
-public class Menu extends JPanel {
+public class Menu extends JPanel {      // now I see that Menu should be just an abstract class and all the menus (main, pause, ...) should extend it, but it is too late to change
     private class Input implements MouseListener {
         private Point click = new Point(), press = new Point();
 
@@ -71,6 +73,8 @@ public class Menu extends JPanel {
 
     private int resX, resY;
 
+    BufferedImage cursor;
+
     private Game game;
     private Input input = new Input();
     private Text focused = null, last;
@@ -99,6 +103,7 @@ public class Menu extends JPanel {
 
         try {
             initTexts();
+            initCursor();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -147,6 +152,11 @@ public class Menu extends JPanel {
             resume();
     }
 
+    private void drawCursor(Graphics g) {
+        Point mouse = MouseInfo.getPointerInfo().getLocation(), window = game.getLocation();
+        g.drawImage(cursor, mouse.x - window.x - 3, mouse.y - window.y - 26, null);     // 3 and 26 are size of borders
+    }
+
     public void paint(Graphics g) {
         g.drawImage(Textures.getSprites().get(Sprite.Sprites.MENU_BG).getImage(), 0, 0, resX, resY, null);
 
@@ -155,6 +165,8 @@ public class Menu extends JPanel {
             Point point = p.getValue();
             g.drawImage(t == focused ? focusedImages.get(t) : images.get(t), point.x, point.y, null);
         }
+
+        drawCursor(g);
     }
 
     private BufferedImage stringToImage(String text, FontMetrics fm, Color c) {
@@ -210,8 +222,15 @@ public class Menu extends JPanel {
         modes.put(Text.MENU, Mode.MAIN);
     }
 
+    private void initCursor() throws IOException {
+        cursor = ImageIO.read(new File("res/cursors/0.png"));
+    }
+
     private void initTexts() throws Exception {     /* in this method, I decided to repeat some code in case for it to work faster
             (otherwise I would have to check if mode != CREDITS in for loop) */
+        final int titleY = 40, textY = 200, deltaTextY = 60;
+        final float fontSize = 40, titleFontSize = 100;
+
         Graphics2D g2d = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
         Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/UnrealT.ttf"));
         LinkedList<Pair<Mode, Pair<Text, Text[]>>> list = new LinkedList<>();
@@ -223,8 +242,8 @@ public class Menu extends JPanel {
         list.add(new Pair<>(Mode.QUIT, new Pair<>(Text.EXIT, new Text[]{Text.YES, Text.NO})));
         list.add(new Pair<>(Mode.PAUSE, new Pair<>(Text.PAUSE, new Text[]{Text.MENU, Text.RESUME})));
 
-        for (Pair<Mode, Pair<Text, Text[]>> p : list) {     // TODO REMOVE ARBITRARY VARS, BECAUSE THEY REPEAT (MAKE THEM CONSTS)
-            g2d.setFont(font.deriveFont(100f));     // 100f is arbitrary
+        for (Pair<Mode, Pair<Text, Text[]>> p : list) {
+            g2d.setFont(font.deriveFont(titleFontSize));
             FontMetrics fm = g2d.getFontMetrics();
             Pair<Text, Text[]> pair = p.getValue();
             Text[] textArray = pair.getValue();
@@ -234,9 +253,9 @@ public class Menu extends JPanel {
             BufferedImage img = stringToImage(strings.get(text), fm, Color.YELLOW);
             images.put(text, img);
             focusedImages.put(text, img);
-            temp.add(new Pair<>(text, new Point((resX - img.getWidth()) / 2, 40)));      // 40 is arbitrary
+            temp.add(new Pair<>(text, new Point((resX - img.getWidth()) / 2, titleY)));
 
-            g2d.setFont(font.deriveFont(40f));      // 40f is arbitrary
+            g2d.setFont(font.deriveFont(fontSize));
             fm = g2d.getFontMetrics();
 
             for (int i = 0; i < textArray.length; i++) {
@@ -244,21 +263,21 @@ public class Menu extends JPanel {
                 img = stringToImage(strings.get(text), fm, Color.WHITE);
                 images.put(text, img);
                 focusedImages.put(text, stringToImage(strings.get(text), fm, Color.YELLOW));
-                temp.add(new Pair<>(text, new Point(endingX - img.getWidth(), 200 + 60 * i)));       // 200 and 60 are arbitrary
+                temp.add(new Pair<>(text, new Point(endingX - img.getWidth(), textY + deltaTextY * i)));
             }
 
             texts.put(p.getKey(), temp);
         }
 
-        g2d.setFont(font.deriveFont(100f));     // 100f is arbitrary
+        g2d.setFont(font.deriveFont(titleFontSize));
         FontMetrics fm = g2d.getFontMetrics();
         LinkedList<Pair<Text, Point>> temp = new LinkedList<>();
         BufferedImage img = stringToImage(strings.get(Text.AUTHORS), fm, Color.YELLOW);
         images.put(Text.AUTHORS, img);
         focusedImages.put(Text.AUTHORS, img);
-        temp.add(new Pair<>(Text.AUTHORS, new Point((resX - img.getWidth()) / 2, 40)));     // 40 is arbitrary
+        temp.add(new Pair<>(Text.AUTHORS, new Point((resX - img.getWidth()) / 2, titleY)));
 
-        g2d.setFont(font.deriveFont(40f));     // 40f is arbitrary
+        g2d.setFont(font.deriveFont(fontSize));
         fm = g2d.getFontMetrics();
         Text[] credits = new Text[]{Text.CODE, Text.M_Z, Text.REST, Text.INTERNET, Text.BACK};
 
@@ -267,7 +286,7 @@ public class Menu extends JPanel {
             img = stringToImage(strings.get(text), fm, Color.WHITE);
             images.put(text, img);
             focusedImages.put(text, text != Text.BACK ? img : stringToImage(strings.get(Text.BACK), fm, Color.YELLOW));
-            temp.add(new Pair<>(text, new Point(i % 2 == 0 ? endingX - img.getWidth() : resX - endingX, 200 + 60 * (i / 2))));      // 200 and 60 are arbitrary
+            temp.add(new Pair<>(text, new Point(i % 2 == 0 ? endingX - img.getWidth() : resX - endingX, textY + deltaTextY * (i / 2))));
         }
 
         texts.put(Mode.CREDITS, temp);
