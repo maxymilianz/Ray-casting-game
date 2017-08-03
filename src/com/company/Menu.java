@@ -165,6 +165,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             iterate(clicked);
         else if (clicked == Text.APPLY)
             apply();
+        else if (clicked == Text.CANCEL)
+            cancel();
         else if (clicked == Text.YES)
             game.exit();
         else if (clicked == Text.RESUME)
@@ -178,6 +180,17 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             if (possibilities.containsKey(t))
                 chosen.put(t, checked.get(t));
         }
+    }
+
+    private void cancel() {
+        for (Pair<Text, Point> p : texts.get(modeStack.peek())) {
+            Text t = p.getKey();
+
+            if (possibilities.containsKey(t))
+                checked.put(t, chosen.get(t));
+        }
+
+        modeStack.pop();
     }
 
     private void iterate(Text t) {
@@ -276,7 +289,6 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private void initHashSets() {
         goBacks.add(Text.BACK);
         goBacks.add(Text.NO);
-        goBacks.add(Text.CANCEL);
 
         settings.add(Mode.GRAPHICS);
         settings.add(Mode.AUDIO);
