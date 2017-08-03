@@ -30,6 +30,7 @@ public class Game extends JFrame {
     private Input input;
     private Menu menu;
     private State state = State.MENU;
+    private Menu.Text resolution = Menu.Text.NATIVE;
 
     private LinkedList<int[][]> maps = new LinkedList<>();
     private LinkedList<NPC> NPCs = new LinkedList<>();

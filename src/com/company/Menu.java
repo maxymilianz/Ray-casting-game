@@ -62,7 +62,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         MAIN, LEVEL, DIFFICULTY, HIGHSCORES, OPTIONS, GRAPHICS, AUDIO, CONTROLS, CREDITS, QUIT, PAUSE
     }
 
-    private enum Text {
+    enum Text {
         BACK,
         TITLE, NEW_GAME, CONTINUE, HIGHSCORES, OPTIONS, CREDITS, QUIT,
         LEVEL, FIRST,
@@ -84,6 +84,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private Text focused = null, last;
 
     private HashSet<Text> goBacks = new HashSet<>();
+    private HashSet<Mode> settings = new HashSet<>();
 
     private Stack<Mode> modeStack = new Stack<>();
 
@@ -94,6 +95,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private Hashtable<Text, BufferedImage> focusedImages = new Hashtable<>();
     private Hashtable<Text, Mode> modes = new Hashtable<>();
     private Hashtable<Text, String> strings = new Hashtable<>();
+    private Hashtable<Text, Point> options = new Hashtable<>();
+    private Hashtable<Text, Text[]> possibilities = new Hashtable<>();
     private Hashtable<Mode, LinkedList<Pair<Text, Point>>> texts = new Hashtable<>();
 
     public Menu(int resX, int resY, Game game) {
@@ -107,7 +110,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         initModes();
         initLevels();
         initDifficulties();
-        initGoBacks();
+        initHashSets();
         initResolutions();
 
         try {
@@ -179,13 +182,15 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             g.drawImage(t == focused ? focusedImages.get(t) : images.get(t), point.x, point.y, null);
         }
 
-        if (modeStack.peek() == Mode.GRAPHICS)
-            drawGraphicsMenu(g);
+        if (settings.contains(modeStack.peek()))
+            drawSettingsMenu(g);
 
         drawCursor(g);
     }
 
-    private void drawGraphicsMenu(Graphics g) {
+    private void drawSettingsMenu(Graphics g) {
+        Mode mode = modeStack.peek();
+
 
     }
 
@@ -225,10 +230,14 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         resolutions.put(Text._300, new Dimension(640, 300));
     }
 
-    private void initGoBacks() {
+    private void initHashSets() {
         goBacks.add(Text.BACK);
         goBacks.add(Text.NO);
         goBacks.add(Text.CANCEL);
+
+        settings.add(Mode.GRAPHICS);
+        settings.add(Mode.AUDIO);
+        settings.add(Mode.CONTROLS);
     }
 
     private void initDifficulties() {
@@ -332,7 +341,28 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
         g2d.setFont(font.deriveFont(titleFontSize));        // graphics options
         fm = g2d.getFontMetrics();
-        temp = new LinkedList<>();
+
+        Text[] tempArray = new Text[]{Text.ON, Text.OFF};
+
+        for (Text t : tempArray) {
+            images.put(t, stringToImage(strings.get(t), fm, Color.WHITE));
+            focusedImages.put(t, stringToImage(strings.get(t), fm, Color.YELLOW));
+        }
+
+        options.put(Text.FULLSCREEN, new Point(resX - endingX, textY));
+        possibilities.put(Text.FULLSCREEN, tempArray);
+
+        tempArray = new Text[]{Text.NATIVE, Text._1080, Text._720, Text._600, Text._300};
+
+        for (Text t : tempArray) {
+            images.put(t, stringToImage(strings.get(t), fm, Color.WHITE));
+            focusedImages.put(t, stringToImage(strings.get(t), fm, Color.YELLOW));
+        }
+
+        possibilities.put(Text.RES, tempArray);
+        possibilities.put(Text.RENDER_RES, tempArray);
+        options.put(Text.RES, new Point(resX - endingX, textY + deltaTextY));
+        options.put(Text.RENDER_RES, new Point(resX - endingX, textY + 2 * deltaTextY));
     }
 
     private void initStrings() {
