@@ -73,7 +73,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
     private int resX, resY;
 
-    BufferedImage cursor;
+    private BufferedImage cursor;
 
     private Game game;
     private Input input = new Input();
@@ -154,7 +154,11 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
     private void drawCursor(Graphics g) {
         Point mouse = MouseInfo.getPointerInfo().getLocation(), window = game.getLocation();
-        g.drawImage(cursor, mouse.x - window.x - 3, mouse.y - window.y - 26, null);     // 3 and 26 are size of borders
+
+        if (game.isFullscreen())
+            g.drawImage(cursor, mouse.x - window.x, mouse.y - window.y, null);
+        else
+            g.drawImage(cursor, mouse.x - window.x - 3, mouse.y - window.y - 26, null);     // 3 and 26 are size of borders
     }
 
     public void paint(Graphics g) {
@@ -192,7 +196,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         modeStack.push(Mode.PAUSE);
     }
 
-    void resume() {
+    private void resume() {
         modeStack.pop();
         game.resume();
     }
@@ -228,8 +232,9 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
     private void initTexts() throws Exception {     /* in this method, I decided to repeat some code in case for it to work faster
             (otherwise I would have to check if mode != CREDITS in for loop) */
-        final int titleY = 40, textY = 200, deltaTextY = 60;
-        final float fontSize = 40, titleFontSize = 100;
+        final float ratioY = (float) resY / 600, ratioX = (float) resX / 1280;
+        final int titleY = (int) (40 * ratioY), textY = (int) (200 * ratioY), deltaTextY = (int) (60 * ratioY);
+        final float fontSize = 40 * Math.min(ratioY, ratioX), titleFontSize = 100 * Math.min(ratioY, ratioX);
 
         Graphics2D g2d = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
         Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/UnrealT.ttf"));

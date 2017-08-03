@@ -14,15 +14,15 @@ public class Input implements MouseListener, KeyListener {
     private long time = System.currentTimeMillis();
     private double sensitivity = 0.003;
 
-    Point mousePos;
-    Robot robot;
+    private Point mousePos;
+    private Robot robot;
 
-    Game game;
-    Hero hero;
-    Game.State state = Game.State.GAME;
+    private Game game;
+    private Hero hero;
+    private Game.State state = Game.State.GAME;
 
-    Hashtable<Integer, Boolean> mouseKeys = new Hashtable<>();
-    Hashtable<Integer, Boolean> keys = new Hashtable<>();
+    private Hashtable<Integer, Boolean> mouseKeys = new Hashtable<>();
+    private Hashtable<Integer, Boolean> keys = new Hashtable<>();
 
     public Input(Game game, Hero hero) {
         this.game = game;
@@ -78,8 +78,10 @@ public class Input implements MouseListener, KeyListener {
     }
 
     private void correctMouse() {
-        int w = game.getWidth(), h = game.getHeight();
+        int margin = 40, w = game.getWidth() - 2 * margin, h = game.getHeight() - 2 * margin;
         Point p = game.getLocationOnScreen(), m = new Point(mousePos);
+        p.x += margin;
+        p.y += margin;
 
         m.x += m.x < p.x ? w : m.x >= p.x + w ? -w : 0;
         m.y += m.y < p.y ? h : m.y >= p.y + h ? -h : 0;

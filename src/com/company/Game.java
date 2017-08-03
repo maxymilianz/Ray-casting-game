@@ -18,11 +18,12 @@ public class Game extends JFrame {
         MENU, GAME, PAUSE
     }
 
+    private boolean fullscreen = true;
     private int resX = 1280, resY = 600, fps = 60, msPerFrame = 1000 / fps;
     private int nrAccuracy = 1;
     private int level, difficulty;
 
-    Cursor c = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank");
+    private Cursor c;
 
     private Camera camera;
     private Hero hero;
@@ -40,6 +41,8 @@ public class Game extends JFrame {
         setFocusable(true);
         setResizable(false);
 
+        initCursorAndFrame();
+
         getContentPane().setPreferredSize(new Dimension(resX, resY));
 
         Textures.init();
@@ -49,6 +52,11 @@ public class Game extends JFrame {
 
         menu = new Menu(resX, resY, this);
         getContentPane().add(menu);
+
+        if (fullscreen) {
+            setUndecorated(true);
+            setExtendedState(MAXIMIZED_BOTH);
+        }
 
         pack();
         setLocationRelativeTo(null);
@@ -151,6 +159,18 @@ public class Game extends JFrame {
         }
     }
 
+    private void initCursorAndFrame() {
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        c = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank");
+
+        if (!fullscreen)
+            return;
+
+        Dimension d = toolkit.getScreenSize();
+        resX = d.width;
+        resY = d.height;
+    }
+
     private void initWallHeight() {
         wallHeight.put(0, new Pair<>(0d, 0d));
 
@@ -185,6 +205,10 @@ public class Game extends JFrame {
 
     State getGameState() {
         return state;
+    }
+
+    public boolean isFullscreen() {
+        return fullscreen;
     }
 
     public static Hashtable<Integer, Pair<Double, Double>> getWallHeight() {
