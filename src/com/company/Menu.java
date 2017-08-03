@@ -14,7 +14,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Stack;
 
-public class Menu extends JPanel {      // now I see that Menu should be just an abstract class and all the menus (main, pause, ...) should extend it, but it is too late to change
+public class Menu extends JPanel {      // now I see that Menu should be just an abstract class and all the menus (main, pause, ...) should extend it
     private class Input implements MouseListener {
         private Point click = new Point(), press = new Point();
 
@@ -58,7 +58,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     }
 
     private enum Mode {
-        MAIN, LEVEL, DIFFICULTY, HIGHSCORES, OPTIONS, CREDITS, QUIT, PAUSE
+        MAIN, LEVEL, DIFFICULTY, HIGHSCORES, OPTIONS, GRAPHICS, AUDIO, CONTROLS, CREDITS, QUIT, PAUSE
     }
 
     private enum Text {
@@ -66,6 +66,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         TITLE, NEW_GAME, CONTINUE, HIGHSCORES, OPTIONS, CREDITS, QUIT,
         LEVEL, FIRST,
         DIFFICULTY, EASY, MEDIUM, HARD, EXTREME,
+        SETTINGS, GRAPHICS, AUDIO, CONTROLS, APPLY,
         AUTHORS, CODE, M_Z, REST, INTERNET,
         EXIT, YES, NO,
         PAUSE, MENU, RESUME,
@@ -224,6 +225,10 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         modes.put(Text.NO, Mode.MAIN);
 
         modes.put(Text.MENU, Mode.MAIN);
+
+        modes.put(Text.GRAPHICS, Mode.GRAPHICS);
+        modes.put(Text.AUDIO, Mode.AUDIO);
+        modes.put(Text.CONTROLS, Mode.CONTROLS);
     }
 
     private void initCursor() throws IOException {
@@ -246,6 +251,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         list.add(new Pair<>(Mode.DIFFICULTY, new Pair<>(Text.DIFFICULTY, new Text[]{Text.EASY, Text.MEDIUM, Text.HARD, Text.EXTREME, Text.BACK})));
         list.add(new Pair<>(Mode.QUIT, new Pair<>(Text.EXIT, new Text[]{Text.YES, Text.NO})));
         list.add(new Pair<>(Mode.PAUSE, new Pair<>(Text.PAUSE, new Text[]{Text.MENU, Text.RESUME})));
+        list.add(new Pair<>(Mode.OPTIONS, new Pair<>(Text.SETTINGS, new Text[]{Text.GRAPHICS, Text.AUDIO, Text.CONTROLS, Text.BACK})));
 
         for (Pair<Mode, Pair<Text, Text[]>> p : list) {
             g2d.setFont(font.deriveFont(titleFontSize));
@@ -330,5 +336,10 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         strings.put(Text.PAUSE, "PAUSE");
         strings.put(Text.MENU, "BACK TO MENU");
         strings.put(Text.RESUME, "RESUME");
+
+        strings.put(Text.SETTINGS, "SETTINGS");
+        strings.put(Text.GRAPHICS, "GRAPHICS");
+        strings.put(Text.AUDIO, "AUDIO");
+        strings.put(Text.CONTROLS, "CONTROLS");
     }
 }
