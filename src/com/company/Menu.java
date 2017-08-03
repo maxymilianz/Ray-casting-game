@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -66,7 +67,9 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         TITLE, NEW_GAME, CONTINUE, HIGHSCORES, OPTIONS, CREDITS, QUIT,
         LEVEL, FIRST,
         DIFFICULTY, EASY, MEDIUM, HARD, EXTREME,
-        SETTINGS, GRAPHICS, AUDIO, CONTROLS, APPLY,
+        SETTINGS, GRAPHICS, AUDIO, CONTROLS, APPLY, CANCEL,
+        GRAPHICS_SETTINGS, FULLSCREEN, RES, RENDER_RES,
+        NATIVE, _1080, _720, _600, _300, ON, OFF,
         AUTHORS, CODE, M_Z, REST, INTERNET,
         EXIT, YES, NO,
         PAUSE, MENU, RESUME,
@@ -79,6 +82,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private Game game;
     private Input input = new Input();
     private Text focused = null, last;
+
+    private HashSet<Text> goBacks = new HashSet<>();
 
     private Stack<Mode> modeStack = new Stack<>();
 
@@ -101,6 +106,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         initModes();
         initLevels();
         initDifficulties();
+        initGoBacks();
 
         try {
             initTexts();
@@ -141,7 +147,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     }
 
     private void action(Text clicked) {
-        if (clicked == Text.BACK)
+        if (goBacks.contains(clicked))
             modeStack.pop();
         else if (difficulties.containsKey(clicked))
             game.newGame(levels.get(last), difficulties.get(clicked));
@@ -202,6 +208,12 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         game.resume();
     }
 
+    private void initGoBacks() {
+        goBacks.add(Text.BACK);
+        goBacks.add(Text.NO);
+        goBacks.add(Text.CANCEL);
+    }
+
     private void initDifficulties() {
         difficulties.put(Text.EASY, 5);
         difficulties.put(Text.MEDIUM, 10);
@@ -221,8 +233,6 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         modes.put(Text.QUIT, Mode.QUIT);
 
         modes.put(Text.FIRST, Mode.DIFFICULTY);
-
-        modes.put(Text.NO, Mode.MAIN);
 
         modes.put(Text.MENU, Mode.MAIN);
 
@@ -252,6 +262,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         list.add(new Pair<>(Mode.QUIT, new Pair<>(Text.EXIT, new Text[]{Text.YES, Text.NO})));
         list.add(new Pair<>(Mode.PAUSE, new Pair<>(Text.PAUSE, new Text[]{Text.MENU, Text.RESUME})));
         list.add(new Pair<>(Mode.OPTIONS, new Pair<>(Text.SETTINGS, new Text[]{Text.GRAPHICS, Text.AUDIO, Text.CONTROLS, Text.BACK})));
+        list.add(new Pair<>(Mode.GRAPHICS, new Pair<>(Text.GRAPHICS_SETTINGS, new Text[]{Text.FULLSCREEN, Text.RES, Text.RENDER_RES, Text.APPLY, Text.CANCEL})));
 
         for (Pair<Mode, Pair<Text, Text[]>> p : list) {
             g2d.setFont(font.deriveFont(titleFontSize));
@@ -280,7 +291,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             texts.put(p.getKey(), temp);
         }
 
-        g2d.setFont(font.deriveFont(titleFontSize));
+        g2d.setFont(font.deriveFont(titleFontSize));        // credits
         FontMetrics fm = g2d.getFontMetrics();
         LinkedList<Pair<Text, Point>> temp = new LinkedList<>();
         BufferedImage img = stringToImage(strings.get(Text.AUTHORS), fm, Color.YELLOW);
@@ -301,6 +312,10 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         }
 
         texts.put(Mode.CREDITS, temp);
+
+        g2d.setFont(font.deriveFont(titleFontSize));        // graphics options
+        fm = g2d.getFontMetrics();
+        temp = new LinkedList<>();
     }
 
     private void initStrings() {
@@ -341,5 +356,19 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         strings.put(Text.GRAPHICS, "GRAPHICS");
         strings.put(Text.AUDIO, "AUDIO");
         strings.put(Text.CONTROLS, "CONTROLS");
+        strings.put(Text.APPLY, "APPLY");
+        strings.put(Text.CANCEL, "CANCEL");
+
+        strings.put(Text.GRAPHICS_SETTINGS, "GRAPHICS SETTINGS");
+        strings.put(Text.FULLSCREEN, "FULLSCREEN");
+        strings.put(Text.ON, "ON");
+        strings.put(Text.OFF, "OFF");
+        strings.put(Text.RES, "RESOLUTION");
+        strings.put(Text.RENDER_RES, "RENDER RESOLUTION");
+        strings.put(Text.NATIVE, "NATIVE");
+        strings.put(Text._1080, "1920 x 1080");
+        strings.put(Text._720, "1280 x 720");
+        strings.put(Text._600, "1280 x 600");
+        strings.put(Text._300, "640 x 300");
     }
 }
