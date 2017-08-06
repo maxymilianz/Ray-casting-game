@@ -169,18 +169,23 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             apply();
         else if (clicked == Text.CANCEL)
             cancel();
-        else if (clicked == Text.PAGE && Desktop.isDesktopSupported()) {
-            try {
-                Desktop.getDesktop().browse(new URI("http://" + strings.get(Text.PAGE)));
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        else if (clicked == Text.PAGE)
+            openWebpage(strings.get(Text.PAGE));
         else if (clicked == Text.YES)
             game.exit();
         else if (clicked == Text.RESUME)
             resume();
+    }
+
+    private void openWebpage(String s) {
+        if (!Desktop.isDesktopSupported());     // TODO DISPLAY INFO, THAT THE LINK COULD NOT BE OPENED
+
+        try {
+            Desktop.getDesktop().browse(new URI("http://" + s));        // if I ever add any other link, it must not contain "http://"
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void apply() {      // TODO REALLY APPLY CHANGES (THIS WAITS ALMOST UNTIL THE END OF CODING, CAUSE THIS IS CONNECTED TO SERIALIZATION AND I STILL DON'T KNOW WHAT TO SER.)
