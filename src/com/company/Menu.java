@@ -10,6 +10,8 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -70,7 +72,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         SETTINGS, GRAPHICS, AUDIO, CONTROLS, APPLY, CANCEL,
         GRAPHICS_SETTINGS, FULLSCREEN, RES, RENDER_RES,
         NATIVE, NATIVE_BY_2, _1080, _720, _600, _300, ON, OFF,
-        AUTHORS, CODE, M_Z, REST, INTERNET,
+        AUTHORS, CODE, M_Z, REST, INTERNET, PAGE,
         EXIT, YES, NO,
         PAUSE, MENU, RESUME,
     }
@@ -167,13 +169,21 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             apply();
         else if (clicked == Text.CANCEL)
             cancel();
+        else if (clicked == Text.PAGE && Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().browse(new URI("http://" + strings.get(Text.PAGE)));
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         else if (clicked == Text.YES)
             game.exit();
         else if (clicked == Text.RESUME)
             resume();
     }
 
-    private void apply() {      // TODO REALLY APPLY CHANGES (THIS WAITS ALMOST UNTIL THE END OF CODING, CAUSE THIS IS CONNECTED TO SERIALIZATION AND I STILL DON'T KNOW WHAT TO SER.
+    private void apply() {      // TODO REALLY APPLY CHANGES (THIS WAITS ALMOST UNTIL THE END OF CODING, CAUSE THIS IS CONNECTED TO SERIALIZATION AND I STILL DON'T KNOW WHAT TO SER.)
         for (Pair<Text, Point> p : texts.get(modeStack.peek())) {
             Text t = p.getKey();
 
@@ -382,15 +392,29 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
         g2d.setFont(font.deriveFont(fontSize));
         fm = g2d.getFontMetrics();
-        Text[] credits = new Text[]{Text.CODE, Text.M_Z, Text.REST, Text.INTERNET, Text.BACK};
+        Text[] credits = new Text[]{Text.CODE, Text.M_Z, Text.REST, Text.INTERNET};
+        int y = 0;
 
         for (int i = 0; i < credits.length; i++) {
             Text text = credits[i];
             img = stringToImage(strings.get(text), fm, Color.WHITE);
             images.put(text, img);
-            focusedImages.put(text, text != Text.BACK ? img : stringToImage(strings.get(Text.BACK), fm, Color.YELLOW));
-            temp.add(new Pair<>(text, new Point(i % 2 == 0 ? endingX - img.getWidth() : resX - endingX, textY + deltaTextY * (i / 2))));
+            focusedImages.put(text, img);
+            y = textY + deltaTextY * (i / 2);
+            temp.add(new Pair<>(text, new Point(i % 2 == 0 ? endingX - img.getWidth() : resX - endingX, y)));
         }
+
+        y += deltaTextY;
+        img = stringToImage(strings.get(Text.BACK), fm, Color.WHITE);
+        images.put(Text.BACK, img);
+        focusedImages.put(Text.BACK, stringToImage(strings.get(Text.BACK), fm, Color.YELLOW));
+        temp.add(new Pair<>(Text.BACK, new Point(endingX - img.getWidth(), y)));
+
+        y += deltaTextY;
+        img = stringToImage(strings.get(Text.PAGE), fm, Color.WHITE);
+        images.put(Text.PAGE, img);
+        focusedImages.put(Text.PAGE, stringToImage(strings.get(Text.PAGE), fm, Color.YELLOW));
+        temp.add(new Pair<>(Text.PAGE, new Point((resX - img.getWidth()) / 2, y)));
 
         texts.put(Mode.CREDITS, temp);
 
@@ -449,6 +473,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         strings.put(Text.M_Z, "MAKSYMILIAN ZAWARTKO");
         strings.put(Text.REST, "REST");
         strings.put(Text.INTERNET, "FROM INTERNET");
+        strings.put(Text.PAGE, "github.com/maxymilianz/Ray-casting-game");
 
         strings.put(Text.PAUSE, "PAUSE");
         strings.put(Text.MENU, "BACK TO MENU");
