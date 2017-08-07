@@ -36,8 +36,8 @@ public class Camera extends JPanel {
         this.renderResY = renderResY;
         wallHeight = renderResY;
         halfResY = renderResY / 2;
-        weaponX = resX - 1000;
-        weaponY = resY - 500;
+        weaponX = resX - 850;
+        weaponY = resY - 400;
         rendered = new BufferedImage(renderResX, renderResY, BufferedImage.TYPE_INT_RGB);
         this.hero = hero;
         this.map = map;
