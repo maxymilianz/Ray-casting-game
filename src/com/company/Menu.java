@@ -17,6 +17,31 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 public class Menu extends JPanel {      // now I see that Menu should be just an abstract class and all the menus (main, pause, ...) should extend it
+    private class Toast {
+        private int time;
+        private long startingTime;
+
+        private Point p;
+
+        private Text t;
+
+        public Toast(long startingTime, Text t) {
+            time = 3000;
+            this.startingTime = startingTime;
+            this.t = t;
+
+            BufferedImage img = images.get(t);
+            p = new Point((resX - img.getWidth()) / 2, resY - img.getHeight() - 100);       // 100 is arbitrary
+        }
+
+        public Toast(int time, long startingTime, Point p, Text t) {
+            this.time = time;
+            this.startingTime = startingTime;
+            this.p = p;
+            this.t = t;
+        }
+    }
+
     private class Input implements MouseListener {
         private Point click = new Point(), press = new Point();
 
@@ -74,11 +99,13 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         AUTHORS, CODE, M_Z, REST, INTERNET, PAGE,
         EXIT, YES, NO,
         PAUSE, MENU, RESUME,
+        LINK,
     }
 
     private int resX, resY;
 
     private BufferedImage cursor;
+    private Color primaryColor = Color.WHITE, focusedColor = Color.YELLOW;
 
     private Game game;
     private Input input = new Input();
@@ -86,8 +113,11 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
     private HashSet<Text> goBacks = new HashSet<>();
     private HashSet<Mode> settings = new HashSet<>();
+    private HashSet<Text> toastTexts = new HashSet<>();
 
     private Stack<Mode> modeStack = new Stack<>();
+
+    private LinkedList<Toast> toasts = new LinkedList<>();
 
     private Hashtable<Text, Dimension> resolutions = new Hashtable<>();
     private Hashtable<Text, Integer> difficulties = new Hashtable<>();
@@ -177,7 +207,10 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     }
 
     private void openWebpage(String s) {
-        if (!Desktop.isDesktopSupported());     // TODO DISPLAY INFO, THAT THE LINK COULD NOT BE OPENED
+        if (!Desktop.isDesktopSupported()) {
+            toasts.add(new Toast(System.currentTimeMillis(), Text.LINK));
+            return;
+        }
 
         try {
             Desktop.getDesktop().browse(new URI("http://" + s));        // if I ever add any other link, it must not contain "http://"
@@ -221,6 +254,17 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             g.drawImage(cursor, mouse.x - window.x - 3, mouse.y - window.y - 26, null);     // 3 and 26 are size of borders
     }
 
+    private void drawToasts(Graphics g) {
+        for (Toast t : toasts) {
+            if (System.currentTimeMillis() - t.startingTime > t.time)
+                toasts.remove(t);
+            else {
+                Point p = t.p;
+                g.drawImage(images.get(t.t), p.x, p.y, null);
+            }
+        }
+    }
+
     public void paint(Graphics g) {
         g.drawImage(Textures.getSprites().get(Sprite.Sprites.MENU_BG).getImage(), 0, 0, resX, resY, null);
 
@@ -232,6 +276,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
         if (settings.contains(modeStack.peek()))
             drawSettingsMenu(g);
+
+        drawToasts(g);
 
         drawCursor(g);
     }
@@ -307,6 +353,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         settings.add(Mode.GRAPHICS);
         settings.add(Mode.AUDIO);
         settings.add(Mode.CONTROLS);
+
+        toastTexts.add(Text.LINK);
     }
 
     private void initDifficulties() {
@@ -340,11 +388,18 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         cursor = ImageIO.read(new File("res/cursors/0.png"));
     }
 
+    private void initToasts(FontMetrics fm) {
+        for (Text t : toastTexts) {
+            BufferedImage text = stringToImage(strings.get(t), fm, primaryColor);
+            images.put(t, text);
+        }
+    }
+
     private void initTexts() throws Exception {     /* in this method, I decided to repeat some code in case for it to work faster
             (otherwise I would have to check if mode != CREDITS in for loop) */
         final float ratioY = (float) resY / 600, ratioX = (float) resX / 1280;
         final int titleY = (int) (40 * ratioY), textY = (int) (200 * ratioY), deltaTextY = (int) (60 * ratioY);
-        final float fontSize = 40 * Math.min(ratioY, ratioX), titleFontSize = 100 * Math.min(ratioY, ratioX);
+        final float fontSize = 40 * Math.min(ratioY, ratioX), titleFontSize = 100 * Math.min(ratioY, ratioX), toastFontSize = 30 * Math.min(ratioY, ratioX);
 
         Graphics2D g2d = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
         Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/UnrealT.ttf"));
@@ -367,7 +422,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
             LinkedList<Pair<Text, Point>> temp = new LinkedList<>();
             Text text = pair.getKey();
-            BufferedImage img = stringToImage(strings.get(text), fm, Color.YELLOW);
+            BufferedImage img = stringToImage(strings.get(text), fm, focusedColor);
             images.put(text, img);
             focusedImages.put(text, img);
             temp.add(new Pair<>(text, new Point((resX - img.getWidth()) / 2, titleY)));
@@ -377,9 +432,9 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
             for (int i = 0; i < textArray.length; i++) {
                 text = textArray[i];
-                img = stringToImage(strings.get(text), fm, Color.WHITE);
+                img = stringToImage(strings.get(text), fm, primaryColor);
                 images.put(text, img);
-                focusedImages.put(text, stringToImage(strings.get(text), fm, Color.YELLOW));
+                focusedImages.put(text, stringToImage(strings.get(text), fm, focusedColor));
                 temp.add(new Pair<>(text, new Point(endingX - img.getWidth(), textY + deltaTextY * i)));
             }
 
@@ -389,7 +444,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         g2d.setFont(font.deriveFont(titleFontSize));        // credits
         FontMetrics fm = g2d.getFontMetrics();
         LinkedList<Pair<Text, Point>> temp = new LinkedList<>();
-        BufferedImage img = stringToImage(strings.get(Text.AUTHORS), fm, Color.YELLOW);
+        BufferedImage img = stringToImage(strings.get(Text.AUTHORS), fm, focusedColor);
         images.put(Text.AUTHORS, img);
         focusedImages.put(Text.AUTHORS, img);
         temp.add(new Pair<>(Text.AUTHORS, new Point((resX - img.getWidth()) / 2, titleY)));
@@ -401,7 +456,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
         for (int i = 0; i < credits.length; i++) {
             Text text = credits[i];
-            img = stringToImage(strings.get(text), fm, Color.WHITE);
+            img = stringToImage(strings.get(text), fm, primaryColor);
             images.put(text, img);
             focusedImages.put(text, img);
             y = textY + deltaTextY * (i / 2);
@@ -409,15 +464,15 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         }
 
         y += deltaTextY;
-        img = stringToImage(strings.get(Text.BACK), fm, Color.WHITE);
+        img = stringToImage(strings.get(Text.BACK), fm, primaryColor);
         images.put(Text.BACK, img);
-        focusedImages.put(Text.BACK, stringToImage(strings.get(Text.BACK), fm, Color.YELLOW));
+        focusedImages.put(Text.BACK, stringToImage(strings.get(Text.BACK), fm, focusedColor));
         temp.add(new Pair<>(Text.BACK, new Point(endingX - img.getWidth(), y)));
 
         y += deltaTextY;
-        img = stringToImage(strings.get(Text.PAGE), fm, Color.WHITE);
+        img = stringToImage(strings.get(Text.PAGE), fm, primaryColor);
         images.put(Text.PAGE, img);
-        focusedImages.put(Text.PAGE, stringToImage(strings.get(Text.PAGE), fm, Color.YELLOW));
+        focusedImages.put(Text.PAGE, stringToImage(strings.get(Text.PAGE), fm, focusedColor));
         temp.add(new Pair<>(Text.PAGE, new Point((resX - img.getWidth()) / 2, y)));
 
         texts.put(Mode.CREDITS, temp);
@@ -428,8 +483,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         Text[] tempArray = new Text[]{Text.ON, Text.OFF};
 
         for (Text t : tempArray) {
-            images.put(t, stringToImage(strings.get(t), fm, Color.WHITE));
-            focusedImages.put(t, stringToImage(strings.get(t), fm, Color.YELLOW));
+            images.put(t, stringToImage(strings.get(t), fm, primaryColor));
+            focusedImages.put(t, stringToImage(strings.get(t), fm, focusedColor));
         }
 
         possibilities.put(Text.FULLSCREEN, tempArray);
@@ -438,14 +493,18 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         tempArray = new Text[]{Text.NATIVE, Text.NATIVE_BY_2, Text._1080, Text._720, Text._600, Text._300};
 
         for (Text t : tempArray) {
-            images.put(t, stringToImage(strings.get(t), fm, Color.WHITE));
-            focusedImages.put(t, stringToImage(strings.get(t), fm, Color.YELLOW));
+            images.put(t, stringToImage(strings.get(t), fm, primaryColor));
+            focusedImages.put(t, stringToImage(strings.get(t), fm, focusedColor));
         }
 
         possibilities.put(Text.RES, tempArray);
         possibilities.put(Text.RENDER_RES, tempArray);
         options.put(Text.RES, new Point(resX - endingX, textY + deltaTextY));
         options.put(Text.RENDER_RES, new Point(resX - endingX, textY + 2 * deltaTextY));
+
+        g2d.setFont(font.deriveFont(toastFontSize));
+        fm = g2d.getFontMetrics();
+        initToasts(fm);
     }
 
     private void initStrings() {
@@ -502,6 +561,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         strings.put(Text._720, "1280 x 720");
         strings.put(Text._600, "1280 x 600");
         strings.put(Text._300, "640 x 300");
+
+        strings.put(Text.LINK, "Link could not be opened");
     }
 
     public Hashtable<Text, Dimension> getResolutions() {
