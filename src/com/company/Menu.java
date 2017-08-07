@@ -177,6 +177,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
                     if (modes.containsKey(t)) {
                         last = t;
                         modeStack.push(modes.get(t));
+                        toasts = new LinkedList<>();
                     }
                     else
                         action(t);
@@ -185,9 +186,14 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         }
     }
 
+    private void back() {
+        modeStack.pop();
+        toasts = new LinkedList<>();
+    }
+
     private void action(Text clicked) {
         if (goBacks.contains(clicked))
-            modeStack.pop();
+            back();
         else if (difficulties.containsKey(clicked))
             game.newGame(levels.get(last), difficulties.get(clicked));
         else if (clicked == Text.CONTINUE)
