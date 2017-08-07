@@ -284,7 +284,6 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             drawSettingsMenu(g);
 
         drawToasts(g);
-
         drawCursor(g);
     }
 
@@ -307,6 +306,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private BufferedImage stringToImage(String text, FontMetrics fm, Color c) {
         BufferedImage img = new BufferedImage(fm.stringWidth(text), fm.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = img.createGraphics();
+
         g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
@@ -404,13 +404,12 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private void initTexts() throws Exception {     /* in this method, I decided to repeat some code in case for it to work faster
             (otherwise I would have to check if mode != CREDITS in for loop) */
         final float ratioY = (float) resY / 600, ratioX = (float) resX / 1280;
-        final int titleY = (int) (40 * ratioY), textY = (int) (200 * ratioY), deltaTextY = (int) (60 * ratioY);
+        final int titleY = (int) (40 * ratioY), textY = (int) (200 * ratioY), deltaTextY = (int) (60 * ratioY), endingX = resX * 890 / 1920;        // 890 and 1920 are arbitrary
         final float fontSize = 40 * Math.min(ratioY, ratioX), titleFontSize = 100 * Math.min(ratioY, ratioX), toastFontSize = 30 * Math.min(ratioY, ratioX);
 
-        Graphics2D g2d = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
         Font font = Font.createFont(Font.TRUETYPE_FONT, new File("res/UnrealT.ttf"));
+        Graphics2D g2d = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
         LinkedList<Pair<Mode, Pair<Text, Text[]>>> list = new LinkedList<>();
-        int endingX = resX * 890 / 1920;        // 890 and 1920 are arbitrary
 
         list.add(new Pair<>(Mode.MAIN, new Pair<>(Text.TITLE, new Text[]{Text.NEW_GAME, Text.CONTINUE, Text.HIGHSCORES, Text.OPTIONS, Text.CREDITS, Text.QUIT})));
         list.add(new Pair<>(Mode.LEVEL, new Pair<>(Text.LEVEL, new Text[]{Text.FIRST, Text.BACK})));
@@ -429,6 +428,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             LinkedList<Pair<Text, Point>> temp = new LinkedList<>();
             Text text = pair.getKey();
             BufferedImage img = stringToImage(strings.get(text), fm, focusedColor);
+
             images.put(text, img);
             focusedImages.put(text, img);
             temp.add(new Pair<>(text, new Point((resX - img.getWidth()) / 2, titleY)));
@@ -439,6 +439,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             for (int i = 0; i < textArray.length; i++) {
                 text = textArray[i];
                 img = stringToImage(strings.get(text), fm, primaryColor);
+
                 images.put(text, img);
                 focusedImages.put(text, stringToImage(strings.get(text), fm, focusedColor));
                 temp.add(new Pair<>(text, new Point(endingX - img.getWidth(), textY + deltaTextY * i)));
@@ -451,32 +452,36 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         FontMetrics fm = g2d.getFontMetrics();
         LinkedList<Pair<Text, Point>> temp = new LinkedList<>();
         BufferedImage img = stringToImage(strings.get(Text.AUTHORS), fm, focusedColor);
+
         images.put(Text.AUTHORS, img);
         focusedImages.put(Text.AUTHORS, img);
         temp.add(new Pair<>(Text.AUTHORS, new Point((resX - img.getWidth()) / 2, titleY)));
 
+        int y = 0;
         g2d.setFont(font.deriveFont(fontSize));
         fm = g2d.getFontMetrics();
         Text[] credits = new Text[]{Text.CODE, Text.M_Z, Text.REST, Text.INTERNET};
-        int y = 0;
 
         for (int i = 0; i < credits.length; i++) {
+            y = textY + deltaTextY * (i / 2);
             Text text = credits[i];
             img = stringToImage(strings.get(text), fm, primaryColor);
+
             images.put(text, img);
             focusedImages.put(text, img);
-            y = textY + deltaTextY * (i / 2);
             temp.add(new Pair<>(text, new Point(i % 2 == 0 ? endingX - img.getWidth() : resX - endingX, y)));
         }
 
         y += deltaTextY;
         img = stringToImage(strings.get(Text.BACK), fm, primaryColor);
+
         images.put(Text.BACK, img);
         focusedImages.put(Text.BACK, stringToImage(strings.get(Text.BACK), fm, focusedColor));
         temp.add(new Pair<>(Text.BACK, new Point(endingX - img.getWidth(), y)));
 
         y += deltaTextY;
         img = stringToImage(strings.get(Text.PAGE), fm, primaryColor);
+
         images.put(Text.PAGE, img);
         focusedImages.put(Text.PAGE, stringToImage(strings.get(Text.PAGE), fm, focusedColor));
         temp.add(new Pair<>(Text.PAGE, new Point((resX - img.getWidth()) / 2, y)));
@@ -485,7 +490,6 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
         g2d.setFont(font.deriveFont(fontSize));        // graphics options
         fm = g2d.getFontMetrics();
-
         Text[] tempArray = new Text[]{Text.ON, Text.OFF};
 
         for (Text t : tempArray) {

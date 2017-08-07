@@ -8,7 +8,7 @@ public class RangedWeapon extends Weapon {
         BULLET, L_BULLET, R_BULLET, SHOT
     }
 
-    double bulletSpeed;
+    private double bulletSpeed;
 
     public RangedWeapon(int power, int accuracy, double bulletSpeed) {
         super(power, accuracy);

@@ -12,7 +12,6 @@ public class Hero extends Character {
 
     public Hero(double speed, double sprintSpeed, int health, int mana, int stamina, int maxHealth, int maxMana, int maxStamina, Point2D pos, Point2D dir, LinkedList<Weapon.Weapons> weapons) {
         super(speed, sprintSpeed, health, mana, stamina, maxHealth, maxMana, maxStamina, pos, dir, weapons);
-
         this.weapons.add(Weapon.Weapons.S_SWORD);
         weapon = weapons.getFirst();
     }

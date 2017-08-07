@@ -38,11 +38,10 @@ public class Camera extends JPanel {
         halfResY = renderResY / 2;
         weaponX = resX - 1000;
         weaponY = resY - 500;
+        rendered = new BufferedImage(renderResX, renderResY, BufferedImage.TYPE_INT_RGB);
         this.hero = hero;
         this.map = map;
         this.NPCs = NPCs;
-
-        rendered = new BufferedImage(renderResX, renderResY, BufferedImage.TYPE_INT_RGB);
     }
 
     public void paint(Graphics g) {
@@ -71,7 +70,6 @@ public class Camera extends JPanel {
             at.translate(img.getWidth() / 2, img.getHeight() / 2);
             at.rotate(hero.getWeaponAngle(), img.getWidth() / 5, img.getHeight() / 2);
             AffineTransformOp op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-
             g.drawImage(op.filter(img, null), weaponX, weaponY, null);
         }
     }
@@ -116,10 +114,9 @@ public class Camera extends JPanel {
             Pair<Point2D, Boolean> collisionInfo = hero.collisionInfo(vec).getFirst().getKey();
             Point2D collisionPoint = collisionInfo.getKey();
 
-            int j = 0, h = (int) (wallHeight * fovRatio * vec.magnitude() / pos.distance(collisionPoint)), emptyH = wallCenterZ - h / 2;
-
             BufferedImage img = Textures.getSprites().get(Textures.getBlocks().get(hero.block(vec, collisionPoint))).getImage();
-            int x = (int) (((collisionInfo.getValue() ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth());
+            int x = (int) (((collisionInfo.getValue() ? collisionPoint.getY() : collisionPoint.getX()) % 1) * img.getWidth()), j = 0,
+                    h = (int) (wallHeight * fovRatio * vec.magnitude() / pos.distance(collisionPoint)), emptyH = wallCenterZ - h / 2;
 
             float fogRatio = (float) pos.distance(collisionPoint);
             fogRatio /= fogRatio < visibility ? visibility : 1;
@@ -157,8 +154,7 @@ public class Camera extends JPanel {
         g.drawImage(rendered, 0, 0, resX, resY, null);
     }
 
-    private int mix (int c0, int c1, float ratio) {     // ratio of (c1 - all) to all
-        ratio = ratio < 0f ? 0f : ratio > 1f ? 1f : ratio;
+    private int mix (int c0, int c1, float ratio) {     // ratio of (c1 - all) to all, should be between 0 and 1
         float iRatio = 1.0f - ratio;
 
         int a = (int) ((c0 >> 24 & 0xff) * iRatio + (c1 >> 24 & 0xff) * ratio);

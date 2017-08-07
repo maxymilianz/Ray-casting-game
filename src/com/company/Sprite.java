@@ -38,6 +38,6 @@ public class Sprite {
     }
 
     BufferedImage getImage() {
-        return images[(time / 10) % images.length];
+        return images[(time / 10) % images.length];     // 10 is arbitrary
     }
 }

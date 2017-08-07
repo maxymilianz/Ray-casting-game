@@ -21,7 +21,8 @@ public class Character {
 
     LinkedList<Weapon.Weapons> weapons = new LinkedList<>();
 
-    public Character(double speed, double sprintSpeed, int health, int mana, int stamina, int maxHealth, int maxMana, int maxStamina, Point2D pos, Point2D dir, LinkedList<Weapon.Weapons> weapons) {
+    public Character(double speed, double sprintSpeed, int health, int mana, int stamina, int maxHealth, int maxMana, int maxStamina, Point2D pos, Point2D dir,
+                     LinkedList<Weapon.Weapons> weapons) {
         this.speed = speed;
         this.sprintSpeed = sprintSpeed;
         this.health = health;
@@ -77,12 +78,12 @@ public class Character {
 
     LinkedList<Pair<Pair<Point2D, Boolean>, Point2D>> collisionInfo(Point2D vec) {
         boolean found = true;       // better to init this with fake value than check if closer == null in inner while
-        LinkedList<Pair<Pair<Point2D, Boolean>, Point2D>> list = new LinkedList<>();
         double tg = vec.getY() / vec.getX(), diffY = Math.abs(tg) * Math.signum(vec.getY()), diffX = 1 / Math.abs(tg) * Math.signum(vec.getX()),
                 x = vec.getX() < 0 ? Math.floor(pos.getX()) : Math.ceil(pos.getX()), y = vec.getY() < 0 ? Math.floor(pos.getY()) : Math.ceil(pos.getY()),
                 lastHeight = 0, distSquaredX = 0, distSquaredY = 0;     // same as with bool found
         Point2D closer = null, px = new Point2D(x, (x - pos.getX()) * tg + pos.getY()), py = new Point2D((y - pos.getY()) / tg + pos.getX(), y),
                 dPx = new Point2D(vec.getX() < 0 ? -1 : 1, diffY), dPy = new Point2D(diffX, vec.getY() < 0 ? -1 : 1);
+        LinkedList<Pair<Pair<Point2D, Boolean>, Point2D>> list = new LinkedList<>();
 
         while (lastHeight != 1) {
             while (found || block(vec, closer) == 0) {

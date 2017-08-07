@@ -83,7 +83,9 @@ public class Game extends JFrame {
 
     void newGame() {
         int[][] map = maps.get(level);
+
         Character.setMap(map);
+        initNPCs();
         Weapon.initWeapons();
 
         hero = new Hero(0.03, 0.06, 100, 100, 100, 100, 100, 100, new Point2D(4.5, 4.5),
@@ -94,8 +96,6 @@ public class Game extends JFrame {
         addKeyListener(input);
 
         camera = new Camera(resX, resY, resX / 2, resY / 2, hero, map, NPCs);
-
-        initNPCs();
 
         resume();
     }
@@ -133,8 +133,8 @@ public class Game extends JFrame {
 
     private void initNPCs() {
         Random r = new Random();
-        int[][] map = maps.get(level);
         int nrOfEnemies = difficulty + r.nextInt(1) * (r.nextBoolean() ? 1 : -1);       // 1 in r.nextInt(int) is arbitrary
+        int[][] map = maps.get(level);
         nrOfEnemies = nrOfEnemies < 0 ? 0 : nrOfEnemies;
 
         for (int i = 0; i < nrOfEnemies; i++) {
