@@ -8,7 +8,7 @@ import java.util.Hashtable;
 
 public class Audio {
     enum Sound {
-        MENU,
+        MENU, SWORD,
     }
 
     private static Hashtable<Sound, Clip> clips = new Hashtable<>();
@@ -27,6 +27,12 @@ public class Audio {
         AudioInputStream stream = AudioSystem.getAudioInputStream(new File("res/audio/intro.wav"));
         Clip clip = AudioSystem.getClip();
         clip.open(stream);
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
         clips.put(Sound.MENU, clip);
+
+        stream = AudioSystem.getAudioInputStream(new File("res/audio/sword.wav"));
+        clip = AudioSystem.getClip();
+        clip.open(stream);
+        clips.put(Sound.SWORD, clip);
     }
 }

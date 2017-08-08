@@ -141,7 +141,10 @@ public class Character {
     }
 
     void attack() {
-        deltaWeaponAngle = -0.2;
+        if (deltaWeaponAngle != -.2) {
+            deltaWeaponAngle = -.2;
+            Audio.start(Audio.Sound.SWORD);
+        }
     }
 
     void forward() {
