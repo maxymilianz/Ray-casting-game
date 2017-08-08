@@ -69,12 +69,12 @@ public class Game extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
 
-        Audio.start(Audio.Sound.MENU);
+        Audio.resetAndStart(Audio.Sound.MENU);
         run();
     }
 
     void pause() {
-        Audio.start(Audio.Sound.MENU);
+        Audio.resetAndStart(Audio.Sound.MENU);
         state = State.PAUSE;
         getContentPane().remove(camera);
         menu.pause();

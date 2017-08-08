@@ -14,7 +14,7 @@ public class Character {
     double speed, sprintSpeed, currentSpeed, minDistToBlock = 0.1;
     int health, mana, stamina, maxHealth, maxMana, maxStamina;
 
-    Point2D pos, dir, movingDir;
+    Point2D pos, dir, zero = new Point2D(0, 0), movingDir = zero, lastMovingDir = zero;
 
     Weapon.Weapons weapon;
 
@@ -46,6 +46,13 @@ public class Character {
             movingDir = movingDir.add(p);
         movingDir = normalize(movingDir);
         go();
+
+        if (lastMovingDir.equals(zero) && !movingDir.equals(zero))
+            Audio.start(Audio.Sound.STEPS);
+        else if (movingDir.equals(zero))
+            Audio.stop(Audio.Sound.STEPS);
+
+        lastMovingDir = movingDir;
 
         if (stamina < maxStamina)
             stamina++;
@@ -143,7 +150,7 @@ public class Character {
     void attack() {
         if (deltaWeaponAngle != -.2) {
             deltaWeaponAngle = -.2;
-            Audio.start(Audio.Sound.SWORD);
+            Audio.resetAndStart(Audio.Sound.SWORD);
         }
     }
 
