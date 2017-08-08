@@ -8,7 +8,7 @@ import java.util.Hashtable;
 
 public class Audio {
     enum Sound {
-        MENU, SWORD, STEPS
+        MENU, SWORD, STEPS, BREATHE,
     }
 
     private static Hashtable<Sound, Clip> clips = new Hashtable<>();
@@ -32,6 +32,7 @@ public class Audio {
         Clip clip = AudioSystem.getClip();
         clip.open(stream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
+        clip.stop();        // after setting clip loop continuously I have to stop it
         clips.put(Sound.MENU, clip);
 
         stream = AudioSystem.getAudioInputStream(new File("res/audio/sword.wav"));
@@ -43,6 +44,14 @@ public class Audio {
         clip = AudioSystem.getClip();
         clip.open(stream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
+        clip.stop();
         clips.put(Sound.STEPS, clip);
+
+        stream = AudioSystem.getAudioInputStream(new File("res/audio/breathing.wav"));
+        clip = AudioSystem.getClip();
+        clip.open(stream);
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
+        clip.stop();
+        clips.put(Sound.BREATHE, clip);
     }
 }

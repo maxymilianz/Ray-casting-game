@@ -10,6 +10,7 @@ import java.util.LinkedList;
  * Created by Lenovo on 14.07.2017.
  */
 public class Character {
+    boolean breathing = false;
     double weaponAngle = 0, deltaWeaponAngle, attackingWeaponAngle = -Math.PI / 2;
     double speed, sprintSpeed, currentSpeed, minDistToBlock = 0.1;
     int health, mana, stamina, maxHealth, maxMana, maxStamina;
@@ -54,8 +55,18 @@ public class Character {
 
         lastMovingDir = movingDir;
 
-        if (stamina < maxStamina)
+        if (stamina < maxStamina) {
             stamina++;
+
+            if (stamina < maxStamina / 2 && !breathing) {
+                Audio.start(Audio.Sound.BREATHE);
+                breathing = true;
+            }
+        }
+        if (stamina >= maxStamina / 2 && breathing) {
+            Audio.stop(Audio.Sound.BREATHE);
+            breathing = false;
+        }
 
         if (deltaWeaponAngle != 0)
             updateWeaponAngle();
