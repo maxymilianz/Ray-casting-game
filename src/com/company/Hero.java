@@ -25,7 +25,7 @@ public class Hero extends Character {
 
     void lookVertical(double delta) {
         zDir += delta;
-        zDir = zDir < 0 ? 0 : zDir > 2 ? 2 : zDir;
+        zDir = zDir < -2 ? -2 : zDir > 2 ? 2 : zDir;        // 2 is arbitrary
     }
 
     private void updateFov() {

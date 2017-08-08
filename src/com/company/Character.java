@@ -3,6 +3,7 @@ package com.company;
 import javafx.geometry.Point2D;
 import javafx.util.Pair;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -10,14 +11,16 @@ import java.util.LinkedList;
  */
 public class Character {
     double weaponAngle = 0, deltaWeaponAngle, attackingWeaponAngle = -Math.PI / 2;
-    double speed, sprintSpeed, minDistToBlock = 0.1;
+    double speed, sprintSpeed, currentSpeed, minDistToBlock = 0.1;
     int health, mana, stamina, maxHealth, maxMana, maxStamina;
 
-    Point2D pos, dir;
+    Point2D pos, dir, movingDir;
 
     Weapon.Weapons weapon;
 
     static int[][] map;
+
+    private HashSet<Point2D> dirs = new HashSet<>();
 
     LinkedList<Weapon.Weapons> weapons = new LinkedList<>();
 
@@ -25,6 +28,7 @@ public class Character {
                      LinkedList<Weapon.Weapons> weapons) {
         this.speed = speed;
         this.sprintSpeed = sprintSpeed;
+        currentSpeed = speed;
         this.health = health;
         this.mana = mana;
         this.stamina = stamina;
@@ -32,18 +36,25 @@ public class Character {
         this.maxMana = maxMana;
         this.maxStamina = maxStamina;
         this.pos = pos;
-        this.dir = dir;
+        this.dir = normalize(dir);
         this.weapons = weapons;
-
-        normalizeDir();
     }
 
     void update() {
+        movingDir = new Point2D(0, 0);
+        for (Point2D p : dirs)
+            movingDir = movingDir.add(p);
+        movingDir = normalize(movingDir);
+        go();
+
         if (stamina < maxStamina)
             stamina++;
 
         if (deltaWeaponAngle != 0)
             updateWeaponAngle();
+
+        currentSpeed = speed;
+        dirs = new HashSet<>();
     }
 
     private void updateWeaponAngle() {
@@ -65,14 +76,14 @@ public class Character {
         }
     }
 
-    private void go(double speed, Point2D dir) {
-        pos = pos.add(dir.multiply(speed));
-        Point2D safePos = pos.add(new Point2D(dir.getX() < 0 ? -minDistToBlock : minDistToBlock, dir.getY() < 0 ? -minDistToBlock : minDistToBlock));
+    private void go() {
+        pos = pos.add(movingDir.multiply(currentSpeed));
+        Point2D safePos = pos.add(new Point2D(movingDir.getX() < 0 ? -minDistToBlock : minDistToBlock, movingDir.getY() < 0 ? -minDistToBlock : minDistToBlock));
 
-        if (block(dir, safePos) != 0) {
-            Pair<Point2D, Boolean> collisionInfo = collisionInfo(dir).getFirst().getKey();
-            pos = collisionInfo.getValue() ? new Point2D(Math.floor(pos.getX()) + (dir.getX() < 0 ? minDistToBlock : 1 - minDistToBlock), pos.getY()) :
-                    new Point2D(pos.getX(), Math.floor(pos.getY()) + (dir.getY() < 0 ? minDistToBlock : 1 - minDistToBlock));
+        if (block(movingDir, safePos) != 0) {
+            Pair<Point2D, Boolean> collisionInfo = collisionInfo(movingDir).getFirst().getKey();
+            pos = collisionInfo.getValue() ? new Point2D(Math.floor(pos.getX()) + (movingDir.getX() < 0 ? minDistToBlock : 1 - minDistToBlock), pos.getY()) :
+                    new Point2D(pos.getX(), Math.floor(pos.getY()) + (movingDir.getY() < 0 ? minDistToBlock : 1 - minDistToBlock));
         }
     }
 
@@ -134,24 +145,24 @@ public class Character {
     }
 
     void forward() {
-        go(speed, dir);
+        dirs.add(dir);
     }
 
     void backward() {
-        go(speed, new Mtx2x2(-1, 0, 0, -1).apply(dir));
+        dirs.add(new Mtx2x2(-1, 0, 0, -1).apply(dir));
     }
 
     void left() {
-        go(speed, new Mtx2x2(0, -1, 1, 0).apply(dir));
+        dirs.add(new Mtx2x2(0, -1, 1, 0).apply(dir));
     }
 
     void right() {
-        go(speed, new Mtx2x2(0, 1, -1, 0).apply(dir));
+        dirs.add(new Mtx2x2(0, 1, -1, 0).apply(dir));
     }
 
     void sprint() {
         if (stamina > 0) {
-            go(sprintSpeed, dir);
+            currentSpeed = sprintSpeed;
             stamina -= 2;
         }
     }
@@ -172,8 +183,9 @@ public class Character {
         return maxMana;
     }
 
-    private void normalizeDir() {
-        dir = dir.multiply(1 / dir.magnitude());
+    private Point2D normalize(Point2D vec) {
+        double d = vec.magnitude();
+        return vec.multiply(d == 0 ? 0 : (1 / d));
     }
 
     public double getWeaponAngle() {
