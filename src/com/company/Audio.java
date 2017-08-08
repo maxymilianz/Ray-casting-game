@@ -30,7 +30,7 @@ public class Audio {
         clips.get(s).stop();
     }
 
-    private static Clip changeSpeed(double ratio, AudioInputStream ais) throws Exception {
+    private static Clip changeSpeed(boolean loop, double ratio, AudioInputStream ais) throws Exception {
         AudioFormat af = ais.getFormat();
         int frameSize = af.getFrameSize();
         byte[] b = new byte[(int) Math.pow(2, 16)];
@@ -54,7 +54,8 @@ public class Audio {
         AudioInputStream ais1 = new AudioInputStream(bais, af, b1.length);
         Clip c = AudioSystem.getClip();
         c.open(ais1);
-        c.loop(Clip.LOOP_CONTINUOUSLY);
+        if (loop)
+            c.loop(Clip.LOOP_CONTINUOUSLY);
         c.stop();
         return c;
     }
@@ -79,7 +80,7 @@ public class Audio {
         clip.stop();
         clips.put(Sound.STEPS, clip);
 
-        clips.put(Sound.FAST_STEPS, changeSpeed(2, AudioSystem.getAudioInputStream(new File("res/audio/steps.wav"))));
+        clips.put(Sound.FAST_STEPS, changeSpeed(true, 2, AudioSystem.getAudioInputStream(new File("res/audio/steps.wav"))));
 
         stream = AudioSystem.getAudioInputStream(new File("res/audio/breathing.wav"));
         clip = AudioSystem.getClip();
