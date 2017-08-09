@@ -130,10 +130,12 @@ public class Game extends JFrame {
             Sprite.update();
             repaint();
 
-            try {
-                Thread.sleep(msPerFrame - (System.currentTimeMillis() - time));
+            if (state == State.GAME) {
+                try {
+                    Thread.sleep(msPerFrame - (System.currentTimeMillis() - time));
+                } catch (Exception e) {
+                }
             }
-            catch (Exception e) { }
         }
     }
 
