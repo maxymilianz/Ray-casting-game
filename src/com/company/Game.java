@@ -29,7 +29,8 @@ public class Game extends JFrame {
     private Input input;
     private Menu menu;
     private State state = State.MENU;
-    private Menu.Text resolution = Menu.Text.NATIVE, renderResolution = Menu.Text.NATIVE_BY_2;
+    private Serialization<Settings> settingsSerialization = new Serialization<>("settings.ser");
+    private Settings settings;
 
     private LinkedList<int[][]> maps = new LinkedList<>();
     private LinkedList<NPC> NPCs = new LinkedList<>();
@@ -71,6 +72,10 @@ public class Game extends JFrame {
 
         Audio.resetAndStart(Audio.Sound.MENU);
         run();
+    }
+
+    private void readSettings() {
+
     }
 
     void pause() {
