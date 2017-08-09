@@ -91,6 +91,10 @@ public class Game extends JFrame {
         getContentPane().validate();
     }
 
+    void restart() {
+        newGame();
+    }
+
     void newGame() {
         int[][] map = maps.get(level);
 

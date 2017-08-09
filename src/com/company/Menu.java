@@ -98,7 +98,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         NATIVE, NATIVE_BY_2, _1080, _720, _600, _300, ON, OFF,
         AUTHORS, CODE, M_Z, REST, INTERNET, PAGE,
         EXIT, YES, NO,
-        PAUSE, MENU, RESUME,
+        PAUSE, RESTART, MENU, RESUME,
         LINK,
     }
 
@@ -208,6 +208,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             openWebpage(strings.get(Text.PAGE));
         else if (clicked == Text.YES)
             game.exit();
+        else if (clicked == Text.RESTART)
+            game.restart();
         else if (clicked == Text.RESUME)
             resume();
     }
@@ -415,7 +417,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         list.add(new Pair<>(Mode.LEVEL, new Pair<>(Text.LEVEL, new Text[]{Text.FIRST, Text.BACK})));
         list.add(new Pair<>(Mode.DIFFICULTY, new Pair<>(Text.DIFFICULTY, new Text[]{Text.EASY, Text.MEDIUM, Text.HARD, Text.EXTREME, Text.BACK})));
         list.add(new Pair<>(Mode.QUIT, new Pair<>(Text.EXIT, new Text[]{Text.YES, Text.NO})));
-        list.add(new Pair<>(Mode.PAUSE, new Pair<>(Text.PAUSE, new Text[]{Text.MENU, Text.RESUME})));
+        list.add(new Pair<>(Mode.PAUSE, new Pair<>(Text.PAUSE, new Text[]{Text.RESTART, Text.MENU, Text.OPTIONS, Text.RESUME})));
         list.add(new Pair<>(Mode.OPTIONS, new Pair<>(Text.SETTINGS, new Text[]{Text.GRAPHICS, Text.AUDIO, Text.CONTROLS, Text.BACK})));
         list.add(new Pair<>(Mode.GRAPHICS, new Pair<>(Text.GRAPHICS_SETTINGS, new Text[]{Text.FULLSCREEN, Text.RES, Text.RENDER_RES, Text.APPLY, Text.CANCEL})));
 
@@ -549,6 +551,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         strings.put(Text.PAGE, "github.com/maxymilianz/Ray-casting-game");
 
         strings.put(Text.PAUSE, "PAUSE");
+        strings.put(Text.RESTART, "RESTART LEVEL");
         strings.put(Text.MENU, "BACK TO MENU");
         strings.put(Text.RESUME, "RESUME");
 
