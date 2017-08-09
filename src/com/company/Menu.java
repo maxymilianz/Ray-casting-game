@@ -228,7 +228,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         }
     }
 
-    private void apply() {      // TODO REALLY APPLY CHANGES (THIS WAITS ALMOST UNTIL THE END OF CODING, CAUSE THIS IS CONNECTED TO SERIALIZATION AND I STILL DON'T KNOW WHAT TO SER.)
+    private void apply() {      // TODO REALLY APPLY CHANGES
         for (Pair<Text, Point> p : texts.get(modeStack.peek())) {
             Text t = p.getKey();
 
