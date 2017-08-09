@@ -2,11 +2,14 @@ package com.company;
 
 import java.io.*;
 
-public class Serialization<T> {
+public class Serialization {
     private String filename;
 
-    public Serialization(String filename) {
+    private Class c;
+
+    public Serialization(String filename, Class c) {
         this.filename = filename;
+        this.c = c;
     }
 
     void serialize(Object o) throws IOException {
@@ -17,12 +20,20 @@ public class Serialization<T> {
         fileOut.close();
     }
 
-    T deserialize() throws Exception {
+    Object deserialize() throws Exception {
+        File file = new File(filename);
+
+        if (!file.exists()) {
+            Object object = c.newInstance();
+            serialize(object);
+            return object;
+        }
+
         FileInputStream fileIn = new FileInputStream(filename);
         ObjectInputStream objIn = new ObjectInputStream(fileIn);
-        T o = (T) objIn.readObject();
+        Object object = (Class.forName(c.getName())).cast(objIn.readObject());
         objIn.close();
         fileIn.close();
-        return o;
+        return object;
     }
 }

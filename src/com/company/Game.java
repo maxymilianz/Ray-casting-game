@@ -29,7 +29,7 @@ public class Game extends JFrame {
     private Input input;
     private Menu menu;
     private State state = State.MENU;
-    private Serialization<Settings> settingsSerialization = new Serialization<>("settings.ser");
+    private Serialization settingsSerialization = new Serialization("settings.ser", Settings.class);
     private Settings settings;
 
     private LinkedList<int[][]> maps = new LinkedList<>();
@@ -41,6 +41,14 @@ public class Game extends JFrame {
         setTitle("Dungeon Raider");
         setFocusable(true);
         setResizable(false);
+
+        try {
+            readSettings();
+            Audio.init();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
         initCursorAndFrame();
 
@@ -59,13 +67,6 @@ public class Game extends JFrame {
             setExtendedState(MAXIMIZED_BOTH);
         }
 
-        try {
-            Audio.init();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
@@ -74,8 +75,8 @@ public class Game extends JFrame {
         run();
     }
 
-    private void readSettings() {
-
+    private void readSettings() throws Exception {
+        settings = (Settings) settingsSerialization.deserialize();
     }
 
     void pause() {
