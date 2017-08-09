@@ -18,8 +18,8 @@ public class Game extends JFrame {
         MENU, GAME, PAUSE
     }
 
-    private boolean fullscreen = true;
-    private int resX = 1366, resY = 768, fps = 60, msPerFrame = 1000 / fps;
+    private boolean fullscreen;
+    private int resX, resY, renderedResX, renderedResY, fps = 60, msPerFrame = 1000 / fps;
     private int level, difficulty;
 
     private Cursor c;
@@ -77,6 +77,12 @@ public class Game extends JFrame {
 
     private void readSettings() throws Exception {
         settings = (Settings) settingsSerialization.deserialize();
+
+        fullscreen = settings.isFullscreen();
+        resX = settings.getResX();
+        resY = settings.getResY();
+        renderedResX = settings.getRenderResX();
+        renderedResY = settings.getRenderResY();
     }
 
     void pause() {
