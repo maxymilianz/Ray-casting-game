@@ -16,7 +16,8 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Stack;
 
-public class Menu extends JPanel {      // now I see that Menu should be just an abstract class and all the menus (main, pause, ...) should extend it
+public class Menu extends JPanel {      /* now I see that Menu should be just an abstract class and all the menus (main, pause, ...) should extend it,
+    update: this class is shitty in general */
     private class Toast {
         private int time;
         private long startingTime;
@@ -95,7 +96,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         DIFFICULTY, EASY, MEDIUM, HARD, EXTREME,
         SETTINGS, GRAPHICS, AUDIO, CONTROLS, APPLY, CANCEL,
         GRAPHICS_SETTINGS, FULLSCREEN, RES, RENDER_RES,
-        NATIVE, NATIVE_BY_2, _1080, _720, _600, _300, ON, OFF,
+        NATIVE, NATIVE_BY_2, _1080, _720, _600, _480, _300, _240, ON, OFF,
         AUTHORS, CODE, M_Z, REST, INTERNET, PAGE,
         EXIT, YES, NO,
         PAUSE, RESTART, MENU, RESUME,
@@ -110,11 +111,12 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private Game game;
     private Input input = new Input();
     private Settings s;
+    private Serialization serialization;
     private Text focused = null, last;
 
-    private HashSet<Text> goBacks = new HashSet<>();
-    private HashSet<Mode> settings = new HashSet<>();
-    private HashSet<Text> toastTexts = new HashSet<>();
+    private static HashSet<Text> goBacks = new HashSet<>();
+    private static HashSet<Mode> settings = new HashSet<>();
+    private static HashSet<Text> toastTexts = new HashSet<>();
 
     private Stack<Mode> modeStack = new Stack<>();
 
@@ -134,11 +136,12 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private Hashtable<Text, Text[]> possibilities = new Hashtable<>();
     private Hashtable<Mode, LinkedList<Pair<Text, Point>>> texts = new Hashtable<>();
 
-    public Menu(int resX, int resY, Game game, Settings s) {
-        this.resX = resX;
-        this.resY = resY;
+    public Menu(Game game, Settings s, Serialization serialization) {
+        this.resX = s.getResX();
+        this.resY = s.getResY();
         this.game = game;
         this.s = s;
+        this.serialization = serialization;
 
         modeStack.push(Mode.MAIN);
 
@@ -146,7 +149,6 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         initModes();
         initLevels();
         initDifficulties();
-        initHashSets();
         initResolutions();
         initIndices();
         initChosen();
@@ -162,8 +164,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         addMouseListener(input);
     }
 
-    public Menu(int resX, int resY, Game game, Settings s, Stack<Mode> modeStack, LinkedList<Toast> toasts) {
-        this(resX, resY, game, s);
+    public Menu(Game game, Settings s, Serialization serialization, Stack<Mode> modeStack, LinkedList<Toast> toasts) {
+        this(game, s, serialization);
         this.modeStack = modeStack;
         this.toasts = toasts;
     }
@@ -247,7 +249,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             if (t == Text.FULLSCREEN && chosen.get(t) != checked.get(t))
                 toasts.add(new Toast(System.currentTimeMillis(), Text.RESTART_APPLY));
 
-            if (t == Text.RES && chosen.get(Text.FULLSCREEN) == 0) {
+            if (t == Text.RES && s.isFullscreen()) {
                 toasts.add(new Toast(System.currentTimeMillis(), Text.FULLSCREEN_RES));
                 continue;
             }
@@ -266,9 +268,19 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             s.setResY(res.height);
             s.setRenderResX(renderRes.width);
             s.setRenderResY(renderRes.height);
-
-            game.useSettings(mode);
         }
+
+        game.applySettings(mode);
+
+        try {
+            serialization.serialize(s);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (mode == Mode.GRAPHICS)
+            game.refresh();
     }
 
     private void cancel() {
@@ -376,7 +388,9 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         indices.put(1080, 2);
         indices.put(720, 3);
         indices.put(600, 4);
-        indices.put(300, 5);
+        indices.put(480, 5);
+        indices.put(300, 6);
+        indices.put(240, 7);
     }
 
     private void initChosen() {
@@ -396,10 +410,12 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         resolutions.put(Text._1080, new Dimension(1920, 1080));
         resolutions.put(Text._720, new Dimension(1280, 720));
         resolutions.put(Text._600, new Dimension(1280, 600));
+        resolutions.put(Text._480, new Dimension(800, 480));
         resolutions.put(Text._300, new Dimension(640, 300));
+        resolutions.put(Text._240, new Dimension(400, 240));
     }
 
-    private void initHashSets() {
+    static void initHashSets() {
         goBacks.add(Text.BACK);
         goBacks.add(Text.NO);
 
@@ -549,14 +565,14 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         possibilities.put(Text.FULLSCREEN, tempArray);
         options.put(Text.FULLSCREEN, new Point(resX - endingX, textY));
 
-        tempArray = new Text[]{Text.NATIVE, Text.NATIVE_BY_2, Text._1080, Text._720, Text._600, Text._300};
+        tempArray = new Text[]{Text.NATIVE, Text.NATIVE_BY_2, Text._1080, Text._720, Text._600, Text._480, Text._300, Text._240};
 
         for (Text t : tempArray) {
             images.put(t, stringToImage(strings.get(t), fm, primaryColor));
             focusedImages.put(t, stringToImage(strings.get(t), fm, focusedColor));
         }
 
-        possibilities.put(Text.RES, new Text[]{Text.NATIVE, Text.NATIVE_BY_2, Text._1080, Text._720, Text._600});
+        possibilities.put(Text.RES, new Text[]{Text.NATIVE, Text.NATIVE_BY_2, Text._1080, Text._720, Text._600, Text._480});
         possibilities.put(Text.RENDER_RES, tempArray);
         options.put(Text.RES, new Point(resX - endingX, textY + deltaTextY));
         options.put(Text.RENDER_RES, new Point(resX - endingX, textY + 2 * deltaTextY));
@@ -620,7 +636,9 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         strings.put(Text._1080, "1920 x 1080");
         strings.put(Text._720, "1280 x 720");
         strings.put(Text._600, "1280 x 600");
+        strings.put(Text._480, "800 x 480");
         strings.put(Text._300, "640 x 300");
+        strings.put(Text._240, "400 x 240");
 
         strings.put(Text.LINK, "Link could not be opened");
         strings.put(Text.RESTART_APPLY, "Restart the game to apply changes");
@@ -633,5 +651,9 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
     public LinkedList<Toast> getToasts() {
         return toasts;
+    }
+
+    public static HashSet<Mode> getSettings() {
+        return settings;
     }
 }

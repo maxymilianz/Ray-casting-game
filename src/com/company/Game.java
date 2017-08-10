@@ -6,7 +6,6 @@ import javafx.util.Pair;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Random;
@@ -42,6 +41,8 @@ public class Game extends JFrame {
         setFocusable(true);
         setResizable(false);
 
+        Menu.initHashSets();
+
         try {
             readSettings();
             Audio.init();
@@ -50,7 +51,7 @@ public class Game extends JFrame {
             e.printStackTrace();
         }
 
-        initCursorAndFrame();
+        c = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank");
 
         getContentPane().setPreferredSize(new Dimension(resX, resY));
 
@@ -59,7 +60,7 @@ public class Game extends JFrame {
         initWallHeight();
         getContentPane().setCursor(c);
 
-        menu = new Menu(resX, resY, this, settings);
+        menu = new Menu(this, settings, settingsSerialization);
         getContentPane().add(menu);
 
         if (settings.isFullscreen()) {
@@ -75,39 +76,42 @@ public class Game extends JFrame {
         run();
     }
 
-    void useSettings(Menu.Mode mode) {
+    void applySettings(Menu.Mode mode) {
         if (mode == Menu.Mode.GRAPHICS) {
-            resX = settings.getResX();
-            resY = settings.getResY();
+            if (settings.isFullscreen()) {
+                Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+                resX = d.width;
+                settings.setResX(resX);
+                resY = d.height;
+                settings.setResY(resY);
+            }
+            else {
+                resX = settings.getResX();
+                resY = settings.getResY();
+            }
+
             renderedResX = settings.getRenderResX();
             renderedResY = settings.getRenderResY();
-
-            remove(menu);
-            menu = new Menu(resX, resY, this, settings, menu.getModeStack(), menu.getToasts());
-            add(menu);
-            validate();
-
-            if (state == State.PAUSE)
-                camera = new Camera(resX, resY, renderedResX, renderedResY, hero, maps.get(level), NPCs);
-
-            setSize(resX, resY);
         }
+    }
 
-        try {
-            settingsSerialization.serialize(settings);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+    void refresh() {
+        remove(menu);
+        menu = new Menu(this, settings, settingsSerialization, menu.getModeStack(), menu.getToasts());
+        add(menu);
+        validate();
+
+        if (state == State.PAUSE)
+            camera = new Camera(resX, resY, renderedResX, renderedResY, hero, maps.get(level), NPCs);
+
+        setSize(resX, resY);
     }
 
     private void readSettings() throws Exception {
         settings = (Settings) settingsSerialization.deserialize();
 
-        resX = settings.getResX();
-        resY = settings.getResY();
-        renderedResX = settings.getRenderResX();
-        renderedResY = settings.getRenderResY();
+        for (Menu.Mode mode : Menu.getSettings())
+            applySettings(mode);
     }
 
     void pause() {
@@ -207,11 +211,6 @@ public class Game extends JFrame {
             NPCs.add(new NPC(0.03, 0.06, 10, 10, 10, 10, 10, 10, new Point2D(x + 0.5, y + 0.5),
                     new Point2D(0, 1), new LinkedList<>(), NPC.Attitude.EVIL, NPC.NPCs.BALDRIC));
         }
-    }
-
-    private void initCursorAndFrame() {
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        c = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank");
     }
 
     private void initWallHeight() {
