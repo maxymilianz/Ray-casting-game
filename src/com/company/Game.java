@@ -6,6 +6,7 @@ import javafx.util.Pair;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Random;
@@ -84,12 +85,19 @@ public class Game extends JFrame {
             renderedResY = settings.getRenderResY();
 
             remove(menu);
-            menu = new Menu(resX, resY, this, settings, menu.getModeStack());
+            menu = new Menu(resX, resY, this, settings, menu.getModeStack(), menu.getToasts());
             add(menu);
             validate();
 
             if (state == State.PAUSE)
                 camera = new Camera(resX, resY, renderedResX, renderedResY, hero, maps.get(level), NPCs);
+        }
+
+        try {
+            settingsSerialization.serialize(settings);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -206,12 +214,12 @@ public class Game extends JFrame {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         c = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank");
 
-        if (!fullscreen)
+        /*if (!fullscreen)
             return;
 
         Dimension d = toolkit.getScreenSize();
         resX = d.width;
-        resY = d.height;
+        resY = d.height;*/
     }
 
     private void initWallHeight() {

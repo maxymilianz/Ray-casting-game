@@ -99,7 +99,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         AUTHORS, CODE, M_Z, REST, INTERNET, PAGE,
         EXIT, YES, NO,
         PAUSE, RESTART, MENU, RESUME,
-        LINK,
+        LINK, RESTART_APPLY, FULLSCREEN_RES,
     }
 
     private int resX, resY;
@@ -120,6 +120,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
     private LinkedList<Toast> toasts = new LinkedList<>();
 
+    private Hashtable<Text, Integer> indices = new Hashtable<>();
     private Hashtable<Text, Dimension> resolutions = new Hashtable<>();
     private Hashtable<Text, Integer> difficulties = new Hashtable<>();
     private Hashtable<Text, Integer> levels = new Hashtable<>();
@@ -160,9 +161,10 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         addMouseListener(input);
     }
 
-    public Menu(int resX, int resY, Game game, Settings s, Stack<Mode> modeStack) {
+    public Menu(int resX, int resY, Game game, Settings s, Stack<Mode> modeStack, LinkedList<Toast> toasts) {
         this(resX, resY, game, s);
         this.modeStack = modeStack;
+        this.toasts = toasts;
     }
 
     void update() {
@@ -240,6 +242,14 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
         for (Pair<Text, Point> p : texts.get(mode)) {
             Text t = p.getKey();
+
+            if (t == Text.FULLSCREEN && chosen.get(t) != checked.get(t))
+                toasts.add(new Toast(System.currentTimeMillis(), Text.RESTART_APPLY));
+
+            if (t == Text.RES && chosen.get(Text.FULLSCREEN) == 0) {
+                toasts.add(new Toast(System.currentTimeMillis(), Text.FULLSCREEN_RES));
+                continue;
+            }
 
             if (possibilities.containsKey(t))
                 chosen.put(t, checked.get(t));
@@ -358,13 +368,13 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     }
 
     private void initChosen() {
-        chosen.put(Text.FULLSCREEN, 0);
+        chosen.put(Text.FULLSCREEN, s.isFullscreen() ? 0 : 1);
         chosen.put(Text.RES, 0);
         chosen.put(Text.RENDER_RES, 1);
 
-        checked.put(Text.FULLSCREEN, 0);
-        checked.put(Text.RES, 0);
-        checked.put(Text.RENDER_RES, 1);
+        checked.put(Text.FULLSCREEN, chosen.get(Text.FULLSCREEN));
+        checked.put(Text.RES, chosen.get(Text.RES));
+        checked.put(Text.RENDER_RES, chosen.get(Text.RENDER_RES));
     }
 
     private void initResolutions() {
@@ -386,6 +396,8 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         settings.add(Mode.CONTROLS);
 
         toastTexts.add(Text.LINK);
+        toastTexts.add(Text.RESTART_APPLY);
+        toastTexts.add(Text.FULLSCREEN_RES);
     }
 
     private void initDifficulties() {
@@ -583,7 +595,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         strings.put(Text.AUDIO, "AUDIO");
         strings.put(Text.CONTROLS, "CONTROLS");
         strings.put(Text.APPLY, "APPLY");
-        strings.put(Text.CANCEL, "CANCEL");
+        strings.put(Text.CANCEL, "CANCEL / BACK");
 
         strings.put(Text.GRAPHICS_SETTINGS, "GRAPHICS SETTINGS");
         strings.put(Text.FULLSCREEN, "FULLSCREEN");
@@ -599,9 +611,15 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         strings.put(Text._300, "640 x 300");
 
         strings.put(Text.LINK, "Link could not be opened");
+        strings.put(Text.RESTART_APPLY, "Restart the game to apply changes");
+        strings.put(Text.FULLSCREEN_RES, "Only native resolution in fullscreen");
     }
 
     public Stack<Mode> getModeStack() {
         return modeStack;
+    }
+
+    public LinkedList<Toast> getToasts() {
+        return toasts;
     }
 }
