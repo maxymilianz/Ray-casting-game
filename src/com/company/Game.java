@@ -19,7 +19,6 @@ public class Game extends JFrame {
         MENU, GAME, PAUSE
     }
 
-    private boolean fullscreen;
     private int resX, resY, renderedResX, renderedResY, fps = 60, msPerFrame = 1000 / fps;
     private int level, difficulty;
 
@@ -63,7 +62,7 @@ public class Game extends JFrame {
         menu = new Menu(resX, resY, this, settings);
         getContentPane().add(menu);
 
-        if (fullscreen) {
+        if (settings.isFullscreen()) {
             setUndecorated(true);
             setExtendedState(MAXIMIZED_BOTH);
         }
@@ -78,7 +77,6 @@ public class Game extends JFrame {
 
     void useSettings(Menu.Mode mode) {
         if (mode == Menu.Mode.GRAPHICS) {
-            fullscreen = settings.isFullscreen();
             resX = settings.getResX();
             resY = settings.getResY();
             renderedResX = settings.getRenderResX();
@@ -91,6 +89,8 @@ public class Game extends JFrame {
 
             if (state == State.PAUSE)
                 camera = new Camera(resX, resY, renderedResX, renderedResY, hero, maps.get(level), NPCs);
+
+            setSize(resX, resY);
         }
 
         try {
@@ -104,7 +104,6 @@ public class Game extends JFrame {
     private void readSettings() throws Exception {
         settings = (Settings) settingsSerialization.deserialize();
 
-        fullscreen = settings.isFullscreen();
         resX = settings.getResX();
         resY = settings.getResY();
         renderedResX = settings.getRenderResX();
@@ -213,13 +212,6 @@ public class Game extends JFrame {
     private void initCursorAndFrame() {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         c = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank");
-
-        /*if (!fullscreen)
-            return;
-
-        Dimension d = toolkit.getScreenSize();
-        resX = d.width;
-        resY = d.height;*/
     }
 
     private void initWallHeight() {
@@ -252,14 +244,6 @@ public class Game extends JFrame {
 
     String[] getHighscores() {
         return new String[0];
-    }
-
-    State getGameState() {
-        return state;
-    }
-
-    public boolean isFullscreen() {
-        return fullscreen;
     }
 
     public static Hashtable<Integer, Pair<Double, Double>> getWallHeight() {

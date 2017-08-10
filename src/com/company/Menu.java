@@ -120,7 +120,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
     private LinkedList<Toast> toasts = new LinkedList<>();
 
-    private Hashtable<Text, Integer> indices = new Hashtable<>();
+    private Hashtable<Integer, Integer> indices = new Hashtable<>();
     private Hashtable<Text, Dimension> resolutions = new Hashtable<>();
     private Hashtable<Text, Integer> difficulties = new Hashtable<>();
     private Hashtable<Text, Integer> levels = new Hashtable<>();
@@ -148,6 +148,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         initDifficulties();
         initHashSets();
         initResolutions();
+        initIndices();
         initChosen();
 
         try {
@@ -289,7 +290,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private void drawCursor(Graphics g) {
         Point mouse = MouseInfo.getPointerInfo().getLocation(), window = game.getLocation();
 
-        if (game.isFullscreen())
+        if (s.isFullscreen())
             g.drawImage(cursor, mouse.x - window.x, mouse.y - window.y, null);
         else
             g.drawImage(cursor, mouse.x - window.x - 3, mouse.y - window.y - 26, null);     // 3 and 26 are size of borders
@@ -367,10 +368,21 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         game.resume();
     }
 
+    private void initIndices() {
+        int nativeH = Toolkit.getDefaultToolkit().getScreenSize().height;
+
+        indices.put(nativeH, 0);
+        indices.put(nativeH / 2, 1);
+        indices.put(1080, 2);
+        indices.put(720, 3);
+        indices.put(600, 4);
+        indices.put(300, 5);
+    }
+
     private void initChosen() {
         chosen.put(Text.FULLSCREEN, s.isFullscreen() ? 0 : 1);
-        chosen.put(Text.RES, 0);
-        chosen.put(Text.RENDER_RES, 1);
+        chosen.put(Text.RES, indices.get(s.getResY()));
+        chosen.put(Text.RENDER_RES, indices.get(s.getRenderResY()));
 
         checked.put(Text.FULLSCREEN, chosen.get(Text.FULLSCREEN));
         checked.put(Text.RES, chosen.get(Text.RES));
@@ -544,7 +556,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
             focusedImages.put(t, stringToImage(strings.get(t), fm, focusedColor));
         }
 
-        possibilities.put(Text.RES, tempArray);
+        possibilities.put(Text.RES, new Text[]{Text.NATIVE, Text.NATIVE_BY_2, Text._1080, Text._720, Text._600});
         possibilities.put(Text.RENDER_RES, tempArray);
         options.put(Text.RES, new Point(resX - endingX, textY + deltaTextY));
         options.put(Text.RENDER_RES, new Point(resX - endingX, textY + 2 * deltaTextY));
