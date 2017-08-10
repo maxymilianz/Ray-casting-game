@@ -60,7 +60,7 @@ public class Game extends JFrame {
         initWallHeight();
         getContentPane().setCursor(c);
 
-        menu = new Menu(this, settings, settingsSerialization);
+        menu = new Menu(settings.isFullscreen(), this, settings, settingsSerialization);
         getContentPane().add(menu);
 
         if (settings.isFullscreen()) {
@@ -97,7 +97,7 @@ public class Game extends JFrame {
 
     void refresh() {
         remove(menu);
-        menu = new Menu(this, settings, settingsSerialization, menu.getModeStack(), menu.getToasts());
+        menu = new Menu(menu.isFullscreen(), this, settings, settingsSerialization, menu.getModeStack(), menu.getToasts());
         add(menu);
         validate();
 

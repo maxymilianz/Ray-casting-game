@@ -103,6 +103,7 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         LINK, RESTART_APPLY, FULLSCREEN_RES,
     }
 
+    private boolean fullscreen;
     private int resX, resY;
 
     private BufferedImage cursor;
@@ -136,7 +137,8 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
     private Hashtable<Text, Text[]> possibilities = new Hashtable<>();
     private Hashtable<Mode, LinkedList<Pair<Text, Point>>> texts = new Hashtable<>();
 
-    public Menu(Game game, Settings s, Serialization serialization) {
+    public Menu(boolean fullscreen, Game game, Settings s, Serialization serialization) {
+        this.fullscreen = fullscreen;
         this.resX = s.getResX();
         this.resY = s.getResY();
         this.game = game;
@@ -164,8 +166,8 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         addMouseListener(input);
     }
 
-    public Menu(Game game, Settings s, Serialization serialization, Stack<Mode> modeStack, LinkedList<Toast> toasts) {
-        this(game, s, serialization);
+    public Menu(boolean fullscreen, Game game, Settings s, Serialization serialization, Stack<Mode> modeStack, LinkedList<Toast> toasts) {
+        this(fullscreen, game, s, serialization);
         this.modeStack = modeStack;
         this.toasts = toasts;
     }
@@ -302,7 +304,7 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
     private void drawCursor(Graphics g) {
         Point mouse = MouseInfo.getPointerInfo().getLocation(), window = game.getLocation();
 
-        if (s.isFullscreen())
+        if (fullscreen)
             g.drawImage(cursor, mouse.x - window.x, mouse.y - window.y, null);
         else
             g.drawImage(cursor, mouse.x - window.x - 3, mouse.y - window.y - 26, null);     // 3 and 26 are size of borders
@@ -655,5 +657,9 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
 
     public static HashSet<Mode> getSettings() {
         return settings;
+    }
+
+    public boolean isFullscreen() {
+        return fullscreen;
     }
 }
