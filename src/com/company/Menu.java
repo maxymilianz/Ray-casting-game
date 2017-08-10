@@ -84,7 +84,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         }
     }
 
-    private enum Mode {
+    enum Mode {
         MAIN, LEVEL, DIFFICULTY, HIGHSCORES, OPTIONS, GRAPHICS, AUDIO, CONTROLS, CREDITS, QUIT, PAUSE
     }
 
@@ -109,6 +109,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
 
     private Game game;
     private Input input = new Input();
+    private Settings s;
     private Text focused = null, last;
 
     private HashSet<Text> goBacks = new HashSet<>();
@@ -132,10 +133,11 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
     private Hashtable<Text, Text[]> possibilities = new Hashtable<>();
     private Hashtable<Mode, LinkedList<Pair<Text, Point>>> texts = new Hashtable<>();
 
-    public Menu(int resX, int resY, Game game) {
+    public Menu(int resX, int resY, Game game, Settings s) {
         this.resX = resX;
         this.resY = resY;
         this.game = game;
+        this.s = s;
 
         modeStack.push(Mode.MAIN);
 
@@ -156,6 +158,11 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         }
 
         addMouseListener(input);
+    }
+
+    public Menu(int resX, int resY, Game game, Settings s, Stack<Mode> modeStack) {
+        this(resX, resY, game, s);
+        this.modeStack = modeStack;
     }
 
     void update() {
@@ -228,12 +235,28 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         }
     }
 
-    private void apply() {      // TODO REALLY APPLY CHANGES
-        for (Pair<Text, Point> p : texts.get(modeStack.peek())) {
+    private void apply() {
+        Mode mode = modeStack.peek();
+
+        for (Pair<Text, Point> p : texts.get(mode)) {
             Text t = p.getKey();
 
             if (possibilities.containsKey(t))
                 chosen.put(t, checked.get(t));
+        }
+
+        if (mode == Mode.GRAPHICS) {
+            boolean fullscreen = chosen.get(Text.FULLSCREEN) == 0;
+            Dimension res = resolutions.get(possibilities.get(Text.RES)[chosen.get(Text.RES)]),
+                    renderRes = resolutions.get(possibilities.get(Text.RENDER_RES)[chosen.get(Text.RENDER_RES)]);
+
+            s.setFullscreen(fullscreen);
+            s.setResX(res.width);
+            s.setResY(res.height);
+            s.setRenderResX(renderRes.width);
+            s.setRenderResY(renderRes.height);
+
+            game.useSettings(mode);
         }
     }
 
@@ -578,7 +601,7 @@ public class Menu extends JPanel {      // now I see that Menu should be just an
         strings.put(Text.LINK, "Link could not be opened");
     }
 
-    public Hashtable<Text, Dimension> getResolutions() {
-        return resolutions;
+    public Stack<Mode> getModeStack() {
+        return modeStack;
     }
 }

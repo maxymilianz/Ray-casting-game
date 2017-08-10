@@ -59,7 +59,7 @@ public class Game extends JFrame {
         initWallHeight();
         getContentPane().setCursor(c);
 
-        menu = new Menu(resX, resY, this);
+        menu = new Menu(resX, resY, this, settings);
         getContentPane().add(menu);
 
         if (fullscreen) {
@@ -73,6 +73,24 @@ public class Game extends JFrame {
 
         Audio.resetAndStart(Audio.Sound.MENU);
         run();
+    }
+
+    void useSettings(Menu.Mode mode) {
+        if (mode == Menu.Mode.GRAPHICS) {
+            fullscreen = settings.isFullscreen();
+            resX = settings.getResX();
+            resY = settings.getResY();
+            renderedResX = settings.getRenderResX();
+            renderedResY = settings.getRenderResY();
+
+            remove(menu);
+            menu = new Menu(resX, resY, this, settings, menu.getModeStack());
+            add(menu);
+            validate();
+
+            if (state == State.PAUSE)
+                camera = new Camera(resX, resY, renderedResX, renderedResY, hero, maps.get(level), NPCs);
+        }
     }
 
     private void readSettings() throws Exception {
@@ -121,7 +139,7 @@ public class Game extends JFrame {
         addMouseListener(input);
         addKeyListener(input);
 
-        camera = new Camera(resX, resY, resX / 2, resY / 2, hero, map, NPCs);
+        camera = new Camera(resX, resY, renderedResX, renderedResY, hero, map, NPCs);
 
         resume();
     }
@@ -146,12 +164,9 @@ public class Game extends JFrame {
             Sprite.update();
             repaint();
 
-            if (state == State.GAME) {
-                try {
-                    Thread.sleep(msPerFrame - (System.currentTimeMillis() - time));
-                } catch (Exception e) {
-                }
-            }
+            try {
+                Thread.sleep(msPerFrame - (System.currentTimeMillis() - time));
+            } catch (Exception e) { }
         }
     }
 
