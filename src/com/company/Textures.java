@@ -45,7 +45,7 @@ public class Textures {
         healthbar.put(5, Sprite.Sprites.H5);
         healthbar.put(6, Sprite.Sprites.H6);
         healthbar.put(7, Sprite.Sprites.H7);
-        healthbar.put(8, Sprite.Sprites.H7);
+        healthbar.put(8, Sprite.Sprites.H8);
 
         manabar.put(0, Sprite.Sprites.M0);
         manabar.put(1, Sprite.Sprites.M1);
