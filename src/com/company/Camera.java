@@ -9,6 +9,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -16,7 +17,7 @@ import java.util.LinkedList;
  * Created by Lenovo on 10.07.2017.
  */
 public class Camera extends JPanel {
-    private final int wallHeight, weaponX, weaponY, floorSize = 4, ceilingSize = 4, halfResY, visibility = 8, fogRGB = Color.black.getRGB();
+    private final int wallHeight, floorSize = 4, ceilingSize = 4, halfResY, visibility = 8, fogRGB = Color.black.getRGB();
             // floorSize and ceilingSize are in tiles
 
     private int resX, resY, renderResX, renderResY;
@@ -30,21 +31,23 @@ public class Camera extends JPanel {
 
     private LinkedList<NPC> NPCs;
 
+    private Hashtable<Integer, Point> resYToWeaponPos = new Hashtable<>();
+
     public Camera(int resX, int resY, int renderResX, int renderResY, Hero hero, int[][] map, LinkedList<NPC> NPCs) {
         this.resX = resX;
         this.resY = resY;
         this.renderResX = renderResX;
         this.renderResY = renderResY;
-        ratioX = resX / 1280;
-        ratioY = resY / 600;
+        ratioX = resX / 1366;
+        ratioY = resY / 768;
         wallHeight = renderResY;
         halfResY = renderResY / 2;
-        weaponX = (int) (resX * .336);
-        weaponY = (int) (resY * .333);
         rendered = new BufferedImage(renderResX, renderResY, BufferedImage.TYPE_INT_RGB);
         this.hero = hero;
         this.map = map;
         this.NPCs = NPCs;
+
+        initWeaponPositions();
     }
 
     public void paint(Graphics g) {
@@ -66,15 +69,16 @@ public class Camera extends JPanel {
         g.drawImage(viewfinder, (resX - viewfinder.getWidth()) / 2, (resY - viewfinder.getHeight()) / 2, null);
     }
 
-    private void drawWeapon(Graphics g) {       // TODO DISPLAY WEAPON AT PROPER POSITION
+    private void drawWeapon(Graphics g) {
         BufferedImage img = Textures.getSprites().get(Textures.getWeapons().get(hero.getWeapon())).getImage();
         if (img != null) {
-            int w = img.getWidth(), h = img.getHeight();
+            Point p = resYToWeaponPos.getOrDefault(resY, new Point(350, 350));
+            int w = img.getWidth(), h = img.getHeight(), x = p.x, y = p.y;
             AffineTransform at = new AffineTransform();
             at.translate(w / 2, h / 2);
             at.rotate(hero.getWeaponAngle(), w / 5, h / 2);
             AffineTransformOp op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-            g.drawImage(op.filter(img, null), weaponX, weaponY, weaponX + (int) (w * ratioX), weaponY + (int) (h * ratioY), null);
+            g.drawImage(op.filter(img, null), x, y, x + (int) (w * ratioX), y + (int) (h * ratioY), null);
         }
     }
 
@@ -167,5 +171,11 @@ public class Camera extends JPanel {
         int b = (int) ((c0 & 0xff) * iRatio + (c1 & 0xff) * ratio);
 
         return a << 24 | r << 16 | g << 8 | b;
+    }
+
+    private void initWeaponPositions() {        // MAYBE TODO
+        resYToWeaponPos.put(720, new Point(800, 650));
+        resYToWeaponPos.put(600, new Point(800, 550));
+        resYToWeaponPos.put(480, new Point(600, 400));
     }
 }
