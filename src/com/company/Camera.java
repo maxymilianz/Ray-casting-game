@@ -20,6 +20,7 @@ public class Camera extends JPanel {
             // floorSize and ceilingSize are in tiles
 
     private int resX, resY, renderResX, renderResY;
+    private double ratioX, ratioY;
 
     private BufferedImage rendered;
 
@@ -34,6 +35,8 @@ public class Camera extends JPanel {
         this.resY = resY;
         this.renderResX = renderResX;
         this.renderResY = renderResY;
+        ratioX = resX / 1280;
+        ratioY = resY / 600;
         wallHeight = renderResY;
         halfResY = renderResY / 2;
         weaponX = (int) (resX * .336);
@@ -63,14 +66,15 @@ public class Camera extends JPanel {
         g.drawImage(viewfinder, (resX - viewfinder.getWidth()) / 2, (resY - viewfinder.getHeight()) / 2, null);
     }
 
-    private void drawWeapon(Graphics g) {
+    private void drawWeapon(Graphics g) {       // TODO DISPLAY WEAPON AT PROPER POSITION
         BufferedImage img = Textures.getSprites().get(Textures.getWeapons().get(hero.getWeapon())).getImage();
         if (img != null) {
+            int w = img.getWidth(), h = img.getHeight();
             AffineTransform at = new AffineTransform();
-            at.translate(img.getWidth() / 2, img.getHeight() / 2);
-            at.rotate(hero.getWeaponAngle(), img.getWidth() / 5, img.getHeight() / 2);
+            at.translate(w / 2, h / 2);
+            at.rotate(hero.getWeaponAngle(), w / 5, h / 2);
             AffineTransformOp op = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-            g.drawImage(op.filter(img, null), weaponX, weaponY, null);
+            g.drawImage(op.filter(img, null), weaponX, weaponY, weaponX + (int) (w * ratioX), weaponY + (int) (h * ratioY), null);
         }
     }
 
