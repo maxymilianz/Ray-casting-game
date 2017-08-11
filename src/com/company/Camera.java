@@ -58,8 +58,9 @@ public class Camera extends JPanel {
     }
 
     private void drawHealthAndManabar(Graphics g) {
-        BufferedImage healthbar = Textures.getSprites().get(Textures.getHealthbar().get(8 * hero.getHealth() / hero.getMaxHealth())).getImage();
-        BufferedImage manabar = Textures.getSprites().get(Textures.getManabar().get(8 * hero.getMana() / hero.getMaxMana())).getImage();
+        int nrOfBarSprites = 8;
+        BufferedImage healthbar = Textures.getSprites().get(Textures.getHealthbar().get(nrOfBarSprites * hero.getHealth() / hero.getMaxHealth())).getImage();
+        BufferedImage manabar = Textures.getSprites().get(Textures.getManabar().get(nrOfBarSprites * hero.getMana() / hero.getMaxMana())).getImage();
         g.drawImage(healthbar, 11, resY - healthbar.getHeight() + 23, null);        // 11 and 23 are arbitrary
         g.drawImage(manabar, resX - manabar.getWidth() - 11, resY - manabar.getHeight() + 23, null);
     }
