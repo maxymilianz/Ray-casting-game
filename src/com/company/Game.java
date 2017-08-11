@@ -115,6 +115,7 @@ public class Game extends JFrame {
     }
 
     void pause() {
+        Audio.stop(Audio.Sound.BG);
         Audio.resetAndStart(Audio.Sound.MENU);
         state = State.PAUSE;
         getContentPane().remove(camera);
@@ -125,6 +126,7 @@ public class Game extends JFrame {
 
     void resume() {
         Audio.stop(Audio.Sound.MENU);
+        Audio.resetAndStart(Audio.Sound.BG);
         state = State.GAME;
         input.resume();
         getContentPane().remove(menu);
