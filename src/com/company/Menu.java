@@ -86,7 +86,7 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
     }
 
     enum Mode {
-        MAIN, LEVEL, DIFFICULTY, HIGHSCORES, OPTIONS, GRAPHICS, AUDIO, CONTROLS, CREDITS, QUIT, PAUSE
+        MAIN, LEVEL, DIFFICULTY, HIGHSCORES, OPTIONS, GRAPHICS, AUDIO, CONTROLS, CREDITS, QUIT, PAUSE, SURE
     }
 
     enum Text {
@@ -101,6 +101,7 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         EXIT, YES, NO,
         PAUSE, RESTART, MENU, RESUME,
         LINK, RESTART_APPLY, FULLSCREEN_RES,
+        SURE,
     }
 
     private boolean fullscreen;
@@ -119,9 +120,9 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
     private static HashSet<Mode> settings = new HashSet<>();
     private static HashSet<Text> toastTexts = new HashSet<>();
 
-    private Stack<Mode> modeStack = new Stack<>();
+    private static Stack<Mode> modeStack = new Stack<>();
 
-    private LinkedList<Toast> toasts = new LinkedList<>();
+    private static LinkedList<Toast> toasts = new LinkedList<>();
 
     private Hashtable<Integer, Integer> indices = new Hashtable<>();
     private Hashtable<Text, Dimension> resolutions = new Hashtable<>();
@@ -145,8 +146,6 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         this.s = s;
         this.serialization = serialization;
 
-        modeStack.push(Mode.MAIN);
-
         initStrings();
         initModes();
         initLevels();
@@ -164,12 +163,6 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         }
 
         addMouseListener(input);
-    }
-
-    public Menu(boolean fullscreen, Game game, Settings s, Serialization serialization, Stack<Mode> modeStack, LinkedList<Toast> toasts) {
-        this(fullscreen, game, s, serialization);
-        this.modeStack = modeStack;
-        this.toasts = toasts;
     }
 
     void update() {
@@ -220,10 +213,18 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
             cancel();
         else if (clicked == Text.PAGE)
             openWebpage(strings.get(Text.PAGE));
-        else if (clicked == Text.YES)
-            game.exit();
-        else if (clicked == Text.RESTART)
-            game.restart();
+        else if (clicked == Text.YES) {
+            Mode mode = modeStack.peek();
+
+            if (mode == Mode.QUIT)
+                game.exit();
+            else {
+                if (last == Text.RESTART)
+                    game.restart();
+                else        // last == Text.MENU
+                    modeStack.push(Mode.MAIN);
+            }
+        }
         else if (clicked == Text.RESUME)
             resume();
     }
@@ -382,6 +383,10 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         game.resume();
     }
 
+    static void initModeStack() {
+        modeStack.push(Mode.MAIN);
+    }
+
     private void initIndices() {
         int nativeH = Toolkit.getDefaultToolkit().getScreenSize().height;
 
@@ -450,11 +455,12 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
 
         modes.put(Text.FIRST, Mode.DIFFICULTY);
 
-        modes.put(Text.MENU, Mode.MAIN);
-
         modes.put(Text.GRAPHICS, Mode.GRAPHICS);
         modes.put(Text.AUDIO, Mode.AUDIO);
         modes.put(Text.CONTROLS, Mode.CONTROLS);
+
+        modes.put(Text.RESTART, Mode.SURE);
+        modes.put(Text.MENU, Mode.SURE);
     }
 
     private void initCursor() throws IOException {
@@ -482,9 +488,10 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         list.add(new Pair<>(Mode.LEVEL, new Pair<>(Text.LEVEL, new Text[]{Text.FIRST, Text.BACK})));
         list.add(new Pair<>(Mode.DIFFICULTY, new Pair<>(Text.DIFFICULTY, new Text[]{Text.EASY, Text.MEDIUM, Text.HARD, Text.EXTREME, Text.BACK})));
         list.add(new Pair<>(Mode.QUIT, new Pair<>(Text.EXIT, new Text[]{Text.YES, Text.NO})));
-        list.add(new Pair<>(Mode.PAUSE, new Pair<>(Text.PAUSE, new Text[]{Text.RESTART, Text.MENU, Text.OPTIONS, Text.RESUME})));
+        list.add(new Pair<>(Mode.PAUSE, new Pair<>(Text.PAUSE, new Text[]{Text.RESTART, Text.MENU, Text.OPTIONS, Text.RESUME, Text.QUIT})));
         list.add(new Pair<>(Mode.OPTIONS, new Pair<>(Text.SETTINGS, new Text[]{Text.GRAPHICS, Text.AUDIO, Text.CONTROLS, Text.BACK})));
         list.add(new Pair<>(Mode.GRAPHICS, new Pair<>(Text.GRAPHICS_SETTINGS, new Text[]{Text.FULLSCREEN, Text.RES, Text.RENDER_RES, Text.APPLY, Text.CANCEL})));
+        list.add(new Pair<>(Mode.SURE, new Pair<>(Text.SURE, new Text[]{Text.YES, Text.NO})));
 
         for (Pair<Mode, Pair<Text, Text[]>> p : list) {
             g2d.setFont(font.deriveFont(titleFontSize));
@@ -645,14 +652,8 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         strings.put(Text.LINK, "Link could not be opened");
         strings.put(Text.RESTART_APPLY, "Restart the game to apply changes");
         strings.put(Text.FULLSCREEN_RES, "Only native resolution in fullscreen");
-    }
 
-    public Stack<Mode> getModeStack() {
-        return modeStack;
-    }
-
-    public LinkedList<Toast> getToasts() {
-        return toasts;
+        strings.put(Text.SURE, "Are You sure?");
     }
 
     public static HashSet<Mode> getSettings() {

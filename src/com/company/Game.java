@@ -42,6 +42,7 @@ public class Game extends JFrame {
         setResizable(false);
 
         Menu.initHashSets();
+        Menu.initModeStack();
 
         try {
             readSettings();
@@ -97,7 +98,7 @@ public class Game extends JFrame {
 
     void refresh() {
         remove(menu);
-        menu = new Menu(menu.isFullscreen(), this, settings, settingsSerialization, menu.getModeStack(), menu.getToasts());
+        menu = new Menu(menu.isFullscreen(), this, settings, settingsSerialization);
         add(menu);
         validate();
 
