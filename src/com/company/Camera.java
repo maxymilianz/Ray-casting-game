@@ -16,10 +16,10 @@ import java.util.LinkedList;
  * Created by Lenovo on 10.07.2017.
  */
 public class Camera extends JPanel {
-    private final int wallHeight, floorSize = 4, ceilingSize = 4, halfResY, visibility = 8, fogRGB = Color.black.getRGB();
+    private final int wallHeight, floorSize = 4, ceilingSize = 4, halfResY, visibility = 8, fogRGB = Color.black.getRGB(), nrOfBarSprites = 8;
             // floorSize and ceilingSize are in tiles
 
-    private int resX, resY, renderResX, renderResY, weaponSizeConst = 2;
+    private int resX, resY, renderResX, renderResY, weaponSizeConst = 2, barsXMargin = 11, barsYMargin = 23;
     private double ratioX, ratioY;
 
     private BufferedImage rendered;
@@ -52,12 +52,12 @@ public class Camera extends JPanel {
         drawHealthAndManabar(g);
     }
 
-    private void drawHealthAndManabar(Graphics g) {     // TODO
-        int nrOfBarSprites = 8;
+    private void drawHealthAndManabar(Graphics g) {     // assumption: healthbar and manabar have the same size
         BufferedImage healthbar = Textures.getSprites().get(Textures.getHealthbar().get(nrOfBarSprites * hero.getHealth() / hero.getMaxHealth())).getImage();
         BufferedImage manabar = Textures.getSprites().get(Textures.getManabar().get(nrOfBarSprites * hero.getMana() / hero.getMaxMana())).getImage();
-        g.drawImage(healthbar, 11, resY - healthbar.getHeight() + 23, null);        // 11 and 23 are arbitrary
-        g.drawImage(manabar, resX - manabar.getWidth() - 11, resY - manabar.getHeight() + 23, null);
+        int w = (int) (healthbar.getWidth() * ratioX), h = (int) (healthbar.getHeight() * ratioY), marginX = (int) (barsXMargin * ratioX), marginY = (int) (barsYMargin * ratioY);
+        g.drawImage(healthbar, marginX, resY - h + marginY, w, h, null);
+        g.drawImage(manabar, resX - w - marginX, resY - h + marginY, w, h, null);
     }
 
     private void drawViewfinder(Graphics g) {
