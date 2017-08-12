@@ -21,8 +21,6 @@ public class Game extends JFrame {
     private int resX, resY, renderedResX, renderedResY, fps = 60, msPerFrame = 1000 / fps;
     private int level, difficulty;
 
-    private Cursor c;
-
     private Camera camera;
     private Hero hero;
     private Input input;
