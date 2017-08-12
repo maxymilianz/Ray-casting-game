@@ -52,14 +52,13 @@ public class Game extends JFrame {
             e.printStackTrace();
         }
 
-        c = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT), new Point(0, 0), "blank");
-
         getContentPane().setPreferredSize(new Dimension(resX, resY));
 
         Textures.init();
         initMaps();
         initWallHeight();
-        getContentPane().setCursor(c);
+        getContentPane().setCursor(Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TRANSLUCENT),
+                new Point(0, 0), "blank"));
 
         menu = new Menu(settings.isFullscreen(), this, settings, settingsSerialization);
         getContentPane().add(menu);
