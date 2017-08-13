@@ -90,7 +90,9 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
 
                 if (mode == Mode.PAUSE)
                     resume();
-                else if (mode != Mode.MAIN)
+                else if (mode == Mode.MAIN)
+                    goTo(Text.QUIT);
+                else
                     back();
             }
         }
@@ -206,16 +208,19 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
                 if (rect.contains(click)) {
                     input.reset();
 
-                    if (modes.containsKey(t)) {
-                        last = t;
-                        modeStack.push(modes.get(t));
-                        toasts = new LinkedList<>();
-                    }
+                    if (modes.containsKey(t))
+                        goTo(t);
                     else
                         action(t);
                 }
             }
         }
+    }
+
+    private void goTo(Text t) {
+        last = t;
+        modeStack.push(modes.get(t));
+        toasts = new LinkedList<>();
     }
 
     private void back() {
