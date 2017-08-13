@@ -5,6 +5,8 @@ import javafx.util.Pair;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -43,7 +45,7 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         }
     }
 
-    private class Input implements MouseListener {
+    private class Input implements MouseListener, KeyListener {
         private Point click = new Point(), press = new Point();
 
         void reset() {
@@ -73,6 +75,28 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
 
         @Override
         public void mouseExited(MouseEvent e) {
+
+        }
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                Mode mode = modeStack.peek();
+
+                if (mode == Mode.PAUSE)
+                    resume();
+                else if (mode != Mode.MAIN)
+                    back();
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
 
         }
 
@@ -163,6 +187,7 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         }
 
         addMouseListener(input);
+        game.addKeyListener(input);
     }
 
     void update() {
