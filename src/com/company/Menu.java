@@ -400,6 +400,7 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
     }
 
     void pause() {
+        game.addKeyListener(input);
         modeStack.push(Mode.PAUSE);
     }
 
@@ -679,6 +680,10 @@ public class Menu extends JPanel {      /* now I see that Menu should be just an
         strings.put(Text.FULLSCREEN_RES, "Only native resolution in fullscreen");
 
         strings.put(Text.SURE, "Are You sure?");
+    }
+
+    public Input getInput() {
+        return input;
     }
 
     public static HashSet<Mode> getSettings() {

@@ -56,7 +56,8 @@ public class Input implements MouseListener, KeyListener {
         keys.put(KeyEvent.VK_SHIFT, false);
     }
 
-    void resume() {
+    void resume(long time) {
+        this.time = time;
         state = Game.State.GAME;
         robot.mouseMove(mousePos.x, mousePos.y);
     }

@@ -126,7 +126,8 @@ public class Game extends JFrame {
         Audio.stop(Audio.Sound.MENU);
         Audio.resetAndStart(Audio.Sound.BG);
         state = State.GAME;
-        input.resume();
+        removeKeyListener(menu.getInput());
+        input.resume(System.currentTimeMillis());
         getContentPane().remove(menu);
         getContentPane().add(camera);
         getContentPane().validate();
